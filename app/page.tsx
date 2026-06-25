@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 
 import { GiCardDraw } from "react-icons/gi";
 
@@ -18,8 +19,12 @@ export default function Home() {
           priority
         />
         <div>
-          <NavbarButton>Entrar</NavbarButton>
-          <NavbarButton className="ml-2">Cadastrar</NavbarButton>
+          <Link href="/auth/login">
+            <NavbarButton>Entrar</NavbarButton>
+          </Link>
+          <Link href="/auth/register">
+            <NavbarButton className="ml-2">Cadastrar</NavbarButton>
+          </Link>
         </div>
       </Navbar>
       <main className="flex flex-1 w-full flex-col items-center justify-center bg-[url('/images/landpage-hero-background.png')] bg-cover bg-no-repeat bg-center">
@@ -29,11 +34,12 @@ export default function Home() {
         <p className="mt-4 text-lg text-center text-white font-light italic drop-shadow-[0_4px_6px_0_rgba(0,0,0,0.25)]">
           Colete gatos ilustrados e troque com seus amigos até completar o seu álbum perfeito.
         </p>
-        <Button className="mt-6">
-          
-          <GiCardDraw className="mr-1" size={30} />
-          Comece a colecionar agora!
-        </Button>
+        <Link href="/auth/register">
+          <Button className="mt-6">
+            <GiCardDraw className="mr-1" size={30} />
+            Comece a colecionar agora!
+          </Button>
+        </Link>
       </main>
     </div>
   );
