@@ -1,3 +1,5 @@
+import { redirect } from "next/navigation";
+
 import Image from "next/image";
 import Link from "next/link";
 
@@ -6,14 +8,22 @@ import { GiCardDraw } from "react-icons/gi";
 import { Navbar } from "@/components/navbar";
 import { NavbarButton } from "@/components/navbar-button";
 import { Button } from "@/components/button";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
 
-export default function Home() {
+export default async function Home() {
+  const supabase = await createSupabaseServerClient();
+  const { data } = await supabase.auth.getUser();
+
+  if (data.user) {
+    redirect("/home");
+  }
+
   return (
     <div className="flex flex-col flex-1">
       <Navbar className="flex flex-row items-center justify-between gap-4">
         <Image
           src="/images/logo.png"
-          alt="Catcha logo"
+          alt="Logo da Catcha"
           width={100}
           height={20}
           priority
