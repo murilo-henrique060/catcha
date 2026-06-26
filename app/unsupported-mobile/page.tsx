@@ -7,7 +7,7 @@ export default function UnsupportedMobilePage() {
         <Image
           className="mx-auto"
           src="/images/logo.png"
-          alt="Catcha logo"
+          alt="Logo da Catcha"
           width={100}
           height={20}
           priority
@@ -16,7 +16,7 @@ export default function UnsupportedMobilePage() {
           Ainda não suportamos celulares!
         </h1>
         <p className="mt-4 text-base leading-7 text-white/90">
-          No momento, nosso aplicativo é otimizado apenas para computadores. Por favor, acesse o site em um dispositivo desktop para aproveitar a experiência completa.
+          No momento, nosso site é otimizado apenas para computadores. Por favor, acesse em um dispositivo desktop para aproveitar a experiência completa.
         </p>
       </section>
     </main>
