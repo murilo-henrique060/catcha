@@ -10,9 +10,6 @@ create table public.items (
   primary key (id)
 );
 
-insert into public.items (id, name, type, description, image_url, price) values
-  (1, 'Acelerar', 'skip', 'Acelerar o Sorteio.', '/items/skip.svg', 100),
-
 create table public.profiles_items (
   profile_id uuid not null references public.profiles on delete cascade,
   item_id bigint not null references public.items on delete cascade,
