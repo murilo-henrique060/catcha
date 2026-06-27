@@ -1,0 +1,67 @@
+create table public.cats (
+  id bigint generated always as identity,
+  
+  name varchar(50) not null,
+  rarity varchar(1) not null,
+  image_path varchar(50) not null,
+);
+
+insert into public.cats (id, name, rarity, image_path) values
+  (1, 'Cat 1', 'C', '/cats/cat1.svg'),
+  (2, 'Cat 2', 'C', '/cats/cat2.svg'),
+  (3, 'Cat 3', 'C', '/cats/cat3.svg'),
+  (4, 'Cat 4', 'C', '/cats/cat4.svg'),
+  (5, 'Cat 5', 'C', '/cats/cat5.svg'),
+  (6, 'Cat 6', 'C', '/cats/cat6.svg'),
+  (7, 'Cat 7', 'C', '/cats/cat7.svg'),
+  (8, 'Cat 8', 'C', '/cats/cat8.svg'),
+  (9, 'Cat 9', 'C', '/cats/cat9.svg'),
+  (10, 'Cat 10', 'C', '/cats/cat10.svg'),
+  (11, 'Cat 11', 'C', '/cats/cat11.svg'),
+  (12, 'Cat 12', 'C', '/cats/cat12.svg'),
+  (13, 'Cat 13', 'C', '/cats/cat13.svg'),
+  (14, 'Cat 14', 'C', '/cats/cat14.svg'),
+  (15, 'Cat 15', 'C', '/cats/cat15.svg'),
+  (16, 'Cat 16', 'C', '/cats/cat16.svg'),
+  (17, 'Cat 17', 'B', '/cats/cat17.svg'),
+  (18, 'Cat 18', 'B', '/cats/cat18.svg'),
+  (19, 'Cat 19', 'B', '/cats/cat19.svg'),
+  (20, 'Cat 20', 'B', '/cats/cat20.svg'),
+  (21, 'Cat 21', 'B', '/cats/cat21.svg'),
+  (22, 'Cat 22', 'B', '/cats/cat22.svg'),
+  (23, 'Cat 23', 'B', '/cats/cat23.svg'),
+  (24, 'Cat 24', 'B', '/cats/cat24.svg'),
+  (25, 'Cat 25', 'B', '/cats/cat25.svg'),
+  (26, 'Cat 26', 'B', '/cats/cat26.svg'),
+  (27, 'Cat 27', 'B', '/cats/cat27.svg'),
+  (28, 'Cat 28', 'B', '/cats/cat28.svg'),
+  (29, 'Cat 29', 'B', '/cats/cat29.svg'),
+  (30, 'Cat 30', 'A', '/cats/cat30.svg'),
+  (31, 'Cat 31', 'A', '/cats/cat31.svg'),
+  (32, 'Cat 32', 'A', '/cats/cat32.svg'),
+  (33, 'Cat 33', 'A', '/cats/cat33.svg'),
+  (34, 'Cat 34', 'A', '/cats/cat34.svg'),
+  (35, 'Cat 35', 'A', '/cats/cat35.svg'),
+  (36, 'Cat 36', 'A', '/cats/cat36.svg'),
+  (37, 'Cat 37', 'A', '/cats/cat37.svg'),
+  (38, 'Cat 38', 'A', '/cats/cat38.svg'),
+  (39, 'Cat 39', 'S', '/cats/cat39.svg'),
+  (40, 'Cat 40', 'S', '/cats/cat40.svg');
+  (41, 'Cat 41', 'S', '/cats/cat41.svg'),
+  (42, 'Cat 42', 'S', '/cats/cat42.svg'),
+  (43, 'Cat 43', 'S', '/cats/cat43.svg'),
+  (44, 'Cat 44', 'S', '/cats/cat44.svg'),
+  (45, 'Cat 45', 'S', '/cats/cat45.svg'),
+  (46, 'Cat 46', 'S', '/cats/cat46.svg'),
+  (47, 'Cat 47', 'S', '/cats/cat47.svg'),
+  (48, 'Cat 48', 'S', '/cats/cat48.svg'),
+  (49, 'Cat 49', 'S', '/cats/cat49.svg'),
+  (50, 'Cat 50', 'S', '/cats/cat50.svg');
+
+create table public.profiles_cats (
+  profile_id uuid not null references public.profiles on delete cascade,
+  cat_id bigint not null references public.cats on delete cascade,
+  quantity integer default 0,
+
+  primary key (profile_id, cat_id)
+);
