@@ -8,8 +8,8 @@ export default function UnsupportedMobilePage() {
           className="mx-auto"
           src="/images/logo.png"
           alt="Logo da Catcha"
-          width={100}
-          height={20}
+          width={150}
+          height={50}
           priority
         />
         <h1 className="mt-4 text-3xl font-bold italic uppercase leading-tight">

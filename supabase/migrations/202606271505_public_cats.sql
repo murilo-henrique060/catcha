@@ -4,6 +4,8 @@ create table public.cats (
   name varchar(50) not null,
   rarity varchar(1) not null,
   image_path varchar(50) not null,
+
+  primary key (id)
 );
 
 create table public.profiles_cats (

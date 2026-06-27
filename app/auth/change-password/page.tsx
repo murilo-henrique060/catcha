@@ -49,7 +49,7 @@ export default async function ChangePasswordPage({ searchParams }: ChangePasswor
       <form action={changePasswordAction} className="w-full max-w-md rounded-3xl bg-white p-8 text-center shadow-[0_4px_6px_0_rgba(0,0,0,0.25)]">
         <Image
           className="mx-auto"
-          src="/images/logo-primary.png"
+          src="/images/logo.png"
           alt="Logo da Catcha"
           width={100}
           height={20}
