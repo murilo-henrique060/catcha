@@ -65,8 +65,8 @@ export function NavbarWidget({ username = "Username", coins = 1000, energy = 10 
                 className={[
                   "relative flex items-center px-3 text-[15px] font-bold italic uppercase tracking-wide transition-colors duration-200 sm:px-4",
                   isActive
-                    ? "bg-[#E01384] text-white border-b-2 border-[#FF99D7]"
-                    : "text-white/95 hover:bg-white/10 hover:text-white",
+                    ? "text-white border-b-2 border-[#FF99D7]"
+                    : "text-white/95 hover:text-white/80 hover:text-white",
                 ].join(" ")}
               >
                 {item.label}
