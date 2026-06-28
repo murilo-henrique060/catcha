@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 
-import { createSupabaseServerClient } from "@/lib/services/supabase/server";
+import { getCurrentUser } from "@/lib/controllers/AuthController";
 
 export const metadata: Metadata = {
   title: "Catcha - Verifique seu e-mail",
@@ -18,29 +18,16 @@ type VerifyEmailPageProps = {
   }>;
 };
 
-function getMessage(reason?: string) {
-  if (reason === "login") {
-    return "Seu e-mail ainda não foi verificado. Confira sua caixa de entrada para ativar a conta.";
-  }
-
-  if (reason === "recovery") {
-    return "Enviamos um link de recuperacao de senha para seu e-mail. Abra a mensagem para continuar.";
-  }
-
-  return "Enviamos um link de confirmação para seu e-mail. Abra a mensagem e clique no link para ativar sua conta.";
-}
-
 export default async function VerifyEmailPage({ searchParams }: VerifyEmailPageProps) {
   const resolvedSearchParams = (await searchParams) ?? {};
-  const supabase = await createSupabaseServerClient();
-  const { data } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
 
-  if (data.user) {
+  if (user) {
     redirect("/home");
   }
 
   const email = resolvedSearchParams.email;
-  const message = getMessage(resolvedSearchParams.reason);
+  const reason = resolvedSearchParams.reason;
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-[url('/images/landpage-hero-background.png')] px-6 py-12">
@@ -56,7 +43,13 @@ export default async function VerifyEmailPage({ searchParams }: VerifyEmailPageP
 
         <h1 className="mt-6 text-xl font-bold uppercase text-[#B01070]">Verifique seu e-mail</h1>
 
-        <p className="mt-3 text-sm text-[#B01070]">{message}</p>
+        <p className="mt-3 text-sm text-[#B01070]">{
+          reason === "login"
+            ? "Seu e-mail ainda não foi verificado. Confira sua caixa de entrada para ativar a conta."
+            : reason === "recovery"
+              ? "Enviamos um link de recuperacao de senha para seu e-mail. Abra a mensagem para continuar."
+              : "Enviamos um link de confirmação para seu e-mail. Abra a mensagem e clique no link para ativar sua conta."
+        }</p>
 
         {email ? (
           <p className="mt-2 text-sm font-bold text-[#B01070]">E-mail informado: {email}</p>
