@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
-
 import { getUserProfile } from "@/lib/controllers/UserController";
 import { NavbarWidget } from "@/ui/widgets/navbar";
+import { ProfileForm } from "@/ui/widgets/profile-form";
 
 export default async function ProfilePage() {
   const profileData = await getUserProfile();
@@ -10,20 +10,15 @@ export default async function ProfilePage() {
     redirect("/auth/login");
   }
 
-  const { profile } = profileData;
+  const { profile, email } = profileData;
   const username = profile.username ?? "Username";
 
   return (
-    <main className="min-h-screen bg-[url('/images/landpage-hero-background.png')] bg-cover bg-center bg-no-repeat">
+    <main className="flex flex-col min-h-screen bg-[#F7F5F7]">
       <NavbarWidget username={username} coins={profile.money} />
 
-      <section className="mx-auto flex min-h-[calc(100vh-3.5rem)] w-full max-w-7xl items-center justify-center px-6 py-12 text-center">
-        <div className="max-w-2xl rounded-3xl border border-white/15 bg-white/10 px-6 py-10 text-white shadow-[0_18px_40px_rgba(0,0,0,0.25)] backdrop-blur-sm sm:px-10">
-          <h1 className="text-3xl font-bold italic uppercase sm:text-5xl">Perfil</h1>
-          <p className="mt-4 text-base italic text-white/90 sm:text-lg">
-            Aqui você pode exibir e editar os dados do usuário.
-          </p>
-        </div>
+      <section className="flex-grow flex items-center justify-center px-4 py-8">
+        <ProfileForm initialEmail={email} initialUsername={username} />
       </section>
     </main>
   );
