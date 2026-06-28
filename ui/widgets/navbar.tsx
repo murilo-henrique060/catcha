@@ -8,7 +8,7 @@ import { HiChevronDoubleRight, HiDotsVertical } from "react-icons/hi";
 import { TbCardsFilled } from "react-icons/tb";
 import { IoMdExit } from "react-icons/io";
 
-import { logoutAction } from "@/app/auth/actions";
+import { logout } from "@/lib/controllers/AuthController";
 
 type NavbarWidgetProps = {
   username?: string;
@@ -126,7 +126,7 @@ export function NavbarWidget({ username = "Username", coins = 1000, energy = 10 
                 <span>Perfil</span>
               </Link>
 
-              <form action={logoutAction} className="mt-1.5">
+              <form action={logout} className="mt-1.5">
                 <button
                   type="submit"
                   className="flex w-full items-center gap-3 rounded-xl px-2 py-2 text-[16px] font-normal transition-colors hover:bg-[#FCE8F4]"

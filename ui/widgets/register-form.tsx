@@ -36,7 +36,7 @@ export function RegisterForm() {
       console.log("Validation errors:", errorMap);
       setErrors(errorMap);
     } else {
-      window.location.href = "/auth/verify-email&reason=signup&email=" + encodeURIComponent(request.email);
+      window.location.href = "/auth/verify-email?reason=register&email=" + encodeURIComponent(request.email);
     }
 
     setSubmit(() => false);

@@ -52,22 +52,14 @@ export default async function VerifyEmailPage({ searchParams }: VerifyEmailPageP
         }</p>
 
         {email ? (
-          <p className="mt-2 text-sm font-bold text-[#B01070]">E-mail informado: {email}</p>
+          <p className="mt-4 text-sm font-bold text-[#B01070]">{email}</p>
         ) : null}
 
-        <p className="mt-6 text-sm text-[#B01070]">
+        <p className="mt-4 text-sm text-[#B01070]">
           Já confirmou o e-mail?{" "}
           <Link href="/auth/login" className="font-bold text-[#B01070] hover:text-[#FF99D7]">
             Entrar agora
           </Link>
-        </p>
-
-        <p className="mt-2 text-sm text-[#B01070]">
-          Não encontrou a mensagem? Verifique o spam ou{" "}
-          <Link href="/auth/register" className="font-bold text-[#B01070] hover:text-[#FF99D7]">
-            cadastre-se novamente
-          </Link>
-          .
         </p>
       </section>
     </main>

@@ -8,6 +8,7 @@ type CardProps = {
   title: string;
   rarity?: CardRarity;
   start_face: CardFace;
+  image_url?: string;
   className?: string;
 };
 
@@ -34,7 +35,7 @@ const rarityColors: Record<CardRarity, [string, string, string]> = {
   ],
 };
 
-export function CardWidget({ title, rarity = CardRarity.C, start_face: initial_face = CardFace.FRONT, className }: CardProps) {
+export function CardWidget({ title, rarity = CardRarity.C, start_face: initial_face = CardFace.FRONT, image_url, className }: CardProps) {
   const [face, setFace] = useState(initial_face);
 
   useEffect(() => {
@@ -48,9 +49,11 @@ export function CardWidget({ title, rarity = CardRarity.C, start_face: initial_f
           'rounded-2xl shadow-[0_4px_6px_0_rgba(0,0,0,0.25)]',
         ].filter(Boolean).join(' ')} style={{ transform: face === CardFace.FRONT ? 'rotateY(0deg)' : 'rotateY(180deg)' }}>
         <div className="absolute inset-0 size-full [backface-visibility:hidden] rounded-2xl p-[10px]" style={{ background: rarityColors[rarity][1] }}>
-          <div className={`flex flex-col h-full rounded-lg p-2 bg-blend-hard-light bg-[url('/cats/front_background.jpg')] bg-contain`} style={{ backgroundColor: rarityColors[rarity][0] }}>
-            <div className="flex justify-between p-1 rounded-lg shadow-[0_2px_4px_0_rgba(0,0,0,0.25)]" style={{ "background": rarityColors[rarity][2] }}>
-              <h2 className="text-[15px] font-bold text-white text-shadow-md">{title}</h2>
+          <div className={`flex flex-col h-full rounded-lg bg-blend-hard-light bg-[url('/cats/front_background.jpg')] bg-contain`} style={{ backgroundColor: rarityColors[rarity][0] }}>
+            <div className="flex-col h-full p-2" style={{ backgroundImage: `url(${image_url ?? '/cats/cat001.webp'})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
+              <div className="flex justify-between p-1 rounded-lg shadow-[0_2px_4px_0_rgba(0,0,0,0.25)]" style={{ "background": rarityColors[rarity][2] }}>
+                <h2 className="text-[15px] font-bold text-white text-shadow-md">{title}</h2>
+              </div>
             </div>
           </div>
         </div>

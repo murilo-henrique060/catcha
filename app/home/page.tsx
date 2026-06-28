@@ -32,7 +32,7 @@ export default async function HomePage() {
       <NavbarWidget username={username} />
       <section className="flex-grow flex py-4">
         <div className="flex-grow-6 flex flex-col items-center justify-center gap-4">
-          <CardWidget className="h-[60vh] w-[42.857vh]" title="Card Title" rarity={CardRarity.C} start_face={CardFace.BACK} />
+          <CardWidget className="h-[60vh] w-[42.857vh]" title="Card Title" rarity={CardRarity.C} start_face={CardFace.FRONT} image_url="/cats/cat001.webp" />
 
           <div className="bg-[#EAEAEA] flex items-center shadow-[0_4px_6px_0_rgba(0,0,0,0.25)] rounded-lg p-3 w-full max-w-[42.857vh] text-[#BD2C85] font-bold gap-2">
             <FaClock className="text-[20px]" />
