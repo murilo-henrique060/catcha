@@ -1,5 +1,6 @@
 'use server';
 
+import { redirect } from "next/navigation";
 import { z } from "zod";
 
 import { createSupabaseServerClient } from "@/lib/services/supabase/server";
@@ -12,10 +13,19 @@ export type RegisterRequest = {
   terms: boolean;
 };
 
+export type ConfirmEmailRequest = {
+  code: string;
+};
+
 export type LoginRequest = {
   email: string;
   password: string;
   rememberMe: boolean;
+};
+
+export type ChangePasswordRequest = {
+  password: string;
+  confirmPassword: string;
 };
 
 export async function register(request: RegisterRequest) {
@@ -92,8 +102,106 @@ export async function register(request: RegisterRequest) {
   return { errors: null };
 }
 
-async function login() {
-  
+export async function login(request: LoginRequest) {
+  const supabase = await createSupabaseServerClient();
+
+  const loginSchema = z.object({
+    email: z.email("Email inválido"),
+    password: z.string().min(1, "Senha é obrigatória"),
+    rememberMe: z.boolean().optional(),
+  });
+
+  const validationResult = await loginSchema.safeParseAsync(request);
+
+  if (!validationResult.success) {
+    const errors = z.treeifyError(validationResult.error).properties;
+    return { errors };
+  }
+
+  const { error } = await supabase.auth.signInWithPassword({
+    email: validationResult.data.email,
+    password: validationResult.data.password,
+  });
+
+  if (error) {
+    if (error.message.toLowerCase().includes("email not confirmed")) {
+      return {
+        errors: {
+          general: { errors: "Confirme seu e-mail para continuar." },
+          emailNotConfirmed: true,
+        },
+      };
+    }
+
+    if (error.message.toLowerCase().includes("invalid login credentials")) {
+      return {
+        errors: {
+          general: { errors: "E-mail ou senha inválidos." },
+        },
+      };
+    }
+
+    return {
+      errors: {
+        general: { errors: error.message },
+      },
+    };
+  }
+
+  return { errors: null };
+}
+
+export async function confirmEmail(request: ConfirmEmailRequest) {
+  const supabase = await createSupabaseServerClient();
+
+  const confirmEmailSchema = z.object({
+    code: z.string().min(1, "Código é obrigatório"),
+  });
+
+  const validationResult = await confirmEmailSchema.safeParseAsync(request);
+
+  if (!validationResult.success) {
+    return { error: new Error("Código inválido") };
+  }
+
+  const { error } = await supabase.auth.exchangeCodeForSession(validationResult.data.code);
+
+  return { error };
+}
+
+export async function changePassword(request: ChangePasswordRequest) {
+  const supabase = await createSupabaseServerClient();
+
+  const changePasswordSchema = z.object({
+    password: z.string()
+      .min(8, "Senha deve ter no mínimo 8 caracteres.")
+      .max(100, "Senha deve ter no máximo 100 caracteres."),
+    confirmPassword: z.string(),
+  }).refine((data) => data.password === data.confirmPassword, {
+    message: "As senhas não conferem",
+    path: ["confirmPassword"],
+  });
+
+  const validationResult = await changePasswordSchema.safeParseAsync(request);
+
+  if (!validationResult.success) {
+    const errors = z.treeifyError(validationResult.error).properties;
+    return { errors };
+  }
+
+  const { error } = await supabase.auth.updateUser({
+    password: validationResult.data.password,
+  });
+
+  if (error) {
+    return {
+      errors: {
+        general: { errors: "Erro ao alterar a senha. Tente novamente." },
+      },
+    };
+  }
+
+  return { errors: null };
 }
 
 export async function getCurrentUser() {
@@ -107,10 +215,8 @@ export async function getCurrentUser() {
   return data.user;
 }
 
-async function confirmEmail() {
-  
-}
-
-async function logout() {
-
+export async function logout() {
+  const supabase = await createSupabaseServerClient();
+  await supabase.auth.signOut();
+  redirect("/auth/login");
 }
