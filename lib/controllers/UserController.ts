@@ -13,18 +13,21 @@ export async function getUserProfile(userId?: string) {
 
   // If no userId is provided, get the currently authenticated user
   if (!targetUserId) {
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-    if (authError || !user) {
-      console.error("Error getting authenticated user:", authError);
+    const { data, error: authError } = await supabase.auth.getUser();
+    if (authError || !data?.user) {
+      // Avoid printing a console error trace for normal guest redirect states
+      if (authError && authError.name !== 'AuthSessionMissingError') {
+        console.error("Error getting authenticated user:", authError);
+      }
       return null;
     }
-    targetUserId = user.id;
-    email = user.email;
+    targetUserId = data.user.id;
+    email = data.user.email;
   } else {
     // Check if the target user is the currently logged in user to safely get the email
-    const { data: { user } } = await supabase.auth.getUser();
-    if (user && user.id === targetUserId) {
-      email = user.email;
+    const { data } = await supabase.auth.getUser();
+    if (data?.user && data.user.id === targetUserId) {
+      email = data.user.email;
     }
   }
 

@@ -1,21 +1,21 @@
 import { redirect } from "next/navigation";
 
-import { createSupabaseServerClient } from "@/lib/services/supabase/server";
+import { getUserProfile } from "@/lib/controllers/UserController";
 import { NavbarWidget } from "@/ui/widgets/navbar";
 
 export default async function ProfilePage() {
-  const supabase = await createSupabaseServerClient();
-  const { data } = await supabase.auth.getUser();
+  const profileData = await getUserProfile();
 
-  if (!data.user) {
+  if (!profileData || !profileData.profile) {
     redirect("/auth/login");
   }
 
-  const username = data.user.user_metadata?.username ?? "Username";
+  const { profile } = profileData;
+  const username = profile.username ?? "Username";
 
   return (
     <main className="min-h-screen bg-[url('/images/landpage-hero-background.png')] bg-cover bg-center bg-no-repeat">
-      <NavbarWidget username={username} />
+      <NavbarWidget username={username} coins={profile.money} />
 
       <section className="mx-auto flex min-h-[calc(100vh-3.5rem)] w-full max-w-7xl items-center justify-center px-6 py-12 text-center">
         <div className="max-w-2xl rounded-3xl border border-white/15 bg-white/10 px-6 py-10 text-white shadow-[0_18px_40px_rgba(0,0,0,0.25)] backdrop-blur-sm sm:px-10">

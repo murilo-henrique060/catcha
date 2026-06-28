@@ -25,8 +25,8 @@ const navigationItems = [
   { label: "AMIGOS", href: "/home/amigos" },
 ];
 
-export function NavbarWidget({ username = "Username", coins = 1000, energy = 10 }: NavbarWidgetProps) {
-  const { profile, isLoading } = useUser();
+export function NavbarWidget({ username = "Username", coins = 0 }: NavbarWidgetProps) {
+  const { profile, isLoading, items } = useUser();
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
@@ -34,6 +34,10 @@ export function NavbarWidget({ username = "Username", coins = 1000, energy = 10 
   const displayUsername = (!isLoading && profile) ? profile.username : username;
   const displayCoins = (!isLoading && profile) ? profile.money : coins;
   const displayCardsDrawn = (!isLoading && profile) ? profile.cards_drawn : 0;
+
+  const displaySkipItemCount = (!isLoading && items)
+    ? (items.find((i) => i.item.type === 'skip' || i.item.name === 'Acelerar')?.quantity ?? 0)
+    : 0;
 
   const [animatedCoins, setAnimatedCoins] = useState(displayCoins);
   const [isUpdating, setIsUpdating] = useState(false);
@@ -152,7 +156,7 @@ export function NavbarWidget({ username = "Username", coins = 1000, energy = 10 
 
           <div className="flex items-center gap-1.5 rounded-full bg-[#7A0A4B]/90 px-3 py-1.5 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]">
             <HiChevronDoubleRight className="text-[18px] text-[#8CC7FF]" />
-            <span className="text-[14px] font-bold leading-none">{energy}</span>
+            <span className="text-[14px] font-bold leading-none">{displaySkipItemCount}</span>
           </div>
 
           <button
