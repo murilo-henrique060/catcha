@@ -9,6 +9,7 @@ import { TbCardsFilled } from "react-icons/tb";
 import { IoMdExit } from "react-icons/io";
 
 import { logout } from "@/lib/controllers/AuthController";
+import { useUser } from "@/lib/contexts/UserContext";
 
 type NavbarWidgetProps = {
   username?: string;
@@ -25,9 +26,71 @@ const navigationItems = [
 ];
 
 export function NavbarWidget({ username = "Username", coins = 1000, energy = 10 }: NavbarWidgetProps) {
+  const { profile, isLoading } = useUser();
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
+
+  const displayUsername = (!isLoading && profile) ? profile.username : username;
+  const displayCoins = (!isLoading && profile) ? profile.money : coins;
+  const displayCardsDrawn = (!isLoading && profile) ? profile.cards_drawn : 0;
+
+  const [animatedCoins, setAnimatedCoins] = useState(displayCoins);
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [hasInitialized, setHasInitialized] = useState(false);
+
+  const animatedCoinsRef = useRef(animatedCoins);
+  useEffect(() => {
+    animatedCoinsRef.current = animatedCoins;
+  }, [animatedCoins]);
+
+  // Sync initial state when displayCoins is first resolved from isLoading = true to false
+  useEffect(() => {
+    if (!isLoading && profile && !hasInitialized) {
+      Promise.resolve().then(() => {
+        setAnimatedCoins(profile.money);
+        setHasInitialized(true);
+      });
+    }
+  }, [isLoading, profile, hasInitialized]);
+
+  // Handle animate increment/decrement
+  useEffect(() => {
+    let startTimestamp: number | null = null;
+    const duration = 800; // 800ms
+    const startVal = animatedCoinsRef.current;
+    const endVal = displayCoins;
+
+    if (startVal === endVal) return;
+
+    let animationFrameId: number;
+
+    const step = (timestamp: number) => {
+      if (!startTimestamp) startTimestamp = timestamp;
+      const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+      
+      const easeProgress = progress * (2 - progress); // easeOutQuad
+      const currentVal = Math.floor(startVal + (endVal - startVal) * easeProgress);
+      setAnimatedCoins(currentVal);
+
+      if (progress < 1) {
+        animationFrameId = window.requestAnimationFrame(step);
+      } else {
+        setIsUpdating(false);
+      }
+    };
+
+    Promise.resolve().then(() => {
+      setIsUpdating(true);
+      animationFrameId = window.requestAnimationFrame(step);
+    });
+
+    return () => {
+      window.cancelAnimationFrame(animationFrameId);
+      setIsUpdating(false);
+    };
+  }, [displayCoins]);
+
 
   useEffect(() => {
     const handleOutsideClick = (event: MouseEvent) => {
@@ -76,9 +139,15 @@ export function NavbarWidget({ username = "Username", coins = 1000, energy = 10 
         </div>
 
         <div className="relative flex items-center gap-2 sm:gap-3" ref={dropdownRef}>
-          <div className="flex items-center gap-1.5 rounded-full bg-[#7A0A4B]/90 px-3 py-1.5 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]">
-            <FaCoins className="text-[18px] text-[#FFD54A] drop-shadow-sm" />
-            <span className="text-[14px] font-bold leading-none">{coins.toLocaleString("pt-BR")}</span>
+          <div className={[
+            "flex items-center gap-1.5 rounded-full bg-[#7A0A4B]/90 px-3 py-1.5 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] transition-all duration-300",
+            isUpdating ? "scale-105 bg-[#BD2C85]/90 border border-[#FF99D7]/30" : ""
+          ].join(" ")}>
+            <FaCoins className={[
+              "text-[18px] text-[#FFD54A] drop-shadow-sm",
+              isUpdating ? "animate-bounce" : ""
+            ].join(" ")} />
+            <span className="text-[14px] font-bold leading-none">{animatedCoins.toLocaleString("pt-BR")}</span>
           </div>
 
           <div className="flex items-center gap-1.5 rounded-full bg-[#7A0A4B]/90 px-3 py-1.5 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]">
@@ -100,20 +169,25 @@ export function NavbarWidget({ username = "Username", coins = 1000, energy = 10 
           {menuOpen ? (
             <div className="absolute right-0 top-full z-20 mt-3 w-64 rounded-[20px] bg-white px-4 py-4 text-[#B01070] shadow-[0_18px_40px_rgba(0,0,0,0.28)]">
               <div className="text-center">
-                <p className="text-[18px] font-bold leading-none italic uppercase">{username}</p>
+                <p className="text-[18px] font-bold leading-none italic uppercase">{displayUsername}</p>
 
                 <div className="mt-3 flex items-center justify-center gap-6">
-                  <div className="flex items-center gap-1.5">
+                  <div className={[
+                    "flex items-center gap-1.5 transition-all duration-300",
+                    isUpdating ? "scale-105 text-[#FF99D7] font-bold" : ""
+                  ].join(" ")}>
                     <FaCoins className="text-[16px] text-[#E10B83]" />
-                    <span className="text-[15px] font-normal leading-none">380</span>
+                    <span className="text-[15px] font-normal leading-none">{animatedCoins.toLocaleString("pt-BR")}</span>
                   </div>
+
 
                   <div className="flex items-center gap-1.5">
                     <TbCardsFilled className="text-[16px] text-[#E10B83]" />
-                    <span className="text-[15px] font-normal leading-none">{coins.toLocaleString("pt-BR")}</span>
+                    <span className="text-[15px] font-normal leading-none">{displayCardsDrawn.toLocaleString("pt-BR")}</span>
                   </div>
                 </div>
               </div>
+
 
               <div className="my-4 h-px bg-[#E8E1E7]" />
 
