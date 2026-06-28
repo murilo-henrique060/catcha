@@ -56,7 +56,7 @@ export function CardWidget({ title, rarity = CardRarity.C, start_face: initial_f
         </div>
         <div className="absolute inset-0 size-full [backface-visibility:hidden] [transform:rotateY(180deg)]">
           <Image
-            src="/cats/back_cover.png"
+            src="/cats/back_cover.webp"
             alt="Card Back Cover"
             fill
             className="object-cover rounded-2xl"

@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 
-import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { createSupabaseServerClient } from "@/lib/services/supabase/server";
 
 export const metadata: Metadata = {
   title: "Catcha - Verifique seu e-mail",

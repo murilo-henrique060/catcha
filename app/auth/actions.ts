@@ -2,7 +2,7 @@
 
 import { redirect } from "next/navigation";
 
-import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { createSupabaseServerClient } from "@/lib/services/supabase/server";
 
 export async function registerAction(formData: FormData) {
   const username = String(formData.get("username") ?? "").trim();

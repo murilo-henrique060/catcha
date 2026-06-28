@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 
-import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { NavbarWidget } from "@/widgets/navbar";
+import { createSupabaseServerClient } from "@/lib/services/supabase/server";
+import { NavbarWidget } from "@/ui/widgets/navbar";
 
 export default async function ProfilePage() {
   const supabase = await createSupabaseServerClient();

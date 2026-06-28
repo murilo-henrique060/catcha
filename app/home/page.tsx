@@ -1,12 +1,12 @@
-import { CardFace, CardRarity } from "@/widgets/card-types";
+import { CardFace, CardRarity } from "@/ui/widgets/card-types";
 import { redirect } from "next/navigation";
 
 import { FaForward, FaClock } from "react-icons/fa6";
 import { GiUpCard } from "react-icons/gi";
 
-import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { NavbarWidget } from "@/widgets/navbar";
-import { CardWidget } from "@/widgets/card";
+import { createSupabaseServerClient } from "@/lib/services/supabase/server";
+import { NavbarWidget } from "@/ui/widgets/navbar";
+import { CardWidget } from "@/ui/widgets/card";
 
 
 const stats = [

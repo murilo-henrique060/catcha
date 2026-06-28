@@ -5,10 +5,10 @@ import Link from "next/link";
 
 import { GiCardDraw } from "react-icons/gi";
 
-import { Navbar } from "@/components/navbar";
-import { NavbarButton } from "@/components/navbar-button";
-import { Button } from "@/components/button";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { Navbar } from "@/ui/components/navbar";
+import { NavbarButton } from "@/ui/components/navbar-button";
+import { Button } from "@/ui/components/button";
+import { createSupabaseServerClient } from "@/lib/services/supabase/server";
 
 export default async function Home() {
   const supabase = await createSupabaseServerClient();
