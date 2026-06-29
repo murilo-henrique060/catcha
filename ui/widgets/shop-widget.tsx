@@ -492,12 +492,12 @@ export function ShopWidget({ allCats }: ShopWidgetProps) {
           ) : (
             /* ================= SUB-GRID RIGHT SIDE PREVIEW ================= */
             selectedCat ? (
-              <div className="w-full max-w-[420px] h-full rounded-3xl bg-white p-6 shadow-[0_4px_12px_rgba(0,0,0,0.1)] border border-gray-100 flex flex-col items-center justify-between gap-4">
+              <div className="w-full h-full rounded-3xl bg-white p-6 shadow-[0_4px_12px_rgba(0,0,0,0.1)] border border-gray-100 flex flex-col items-center justify-between gap-2">
                 
                 {/* LARGE 3D Card Widget */}
                 <div className="flex-grow flex items-center justify-center w-full">
                   <CardWidget
-                    className="h-[calc(100vh-420px)] w-[calc((100vh-420px)*0.714)] max-h-[290px] max-w-[207px]"
+                    className="h-[calc(100vh-360px)] w-[calc((100vh-360px)*0.714)]"
                     title={selectedCat.name}
                     rarity={mapRarity(selectedCat.rarity)}
                     start_face={CardFace.FRONT}
@@ -550,7 +550,7 @@ export function ShopWidget({ allCats }: ShopWidgetProps) {
                 </div>
               </div>
             ) : (
-              <div className="w-full max-w-[420px] h-full rounded-3xl bg-gray-50 border border-dashed border-gray-300 flex flex-col items-center justify-center text-gray-400 gap-2">
+              <div className="w-full h-full rounded-3xl bg-gray-50 border border-dashed border-gray-300 flex flex-col items-center justify-center text-gray-400 gap-2">
                 <TbCardsFilled className="text-[48px] text-gray-300 animate-pulse" />
                 <p className="text-[16px] font-bold">Nenhum gato selecionado</p>
                 <p className="text-[13px] px-8 text-center">Selecione um item no catálogo ao lado para ver os detalhes.</p>
