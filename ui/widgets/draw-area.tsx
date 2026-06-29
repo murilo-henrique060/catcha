@@ -35,6 +35,7 @@ export function DrawArea({ drawIntervalMs }: DrawAreaProps) {
   
   const [isDrawing, setIsDrawing] = useState(false);
   const [isFastForwarding, setIsFastForwarding] = useState(false);
+  const [hasLoadedInitial, setHasLoadedInitial] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [drawnCat, setDrawnCat] = useState<{ name: string; rarity: string; image_path: string } | null>(null);
@@ -48,6 +49,12 @@ export function DrawArea({ drawIntervalMs }: DrawAreaProps) {
     : 0;
 
   useEffect(() => {
+    Promise.resolve().then(() => {
+      setHasLoadedInitial(false);
+    });
+  }, [nextDraw]);
+
+  useEffect(() => {
     if (isFastForwarding) return;
 
     const calculateRemaining = () => {
@@ -59,6 +66,9 @@ export function DrawArea({ drawIntervalMs }: DrawAreaProps) {
 
     Promise.resolve().then(() => {
       setRemainingTime(calculateRemaining());
+      setTimeout(() => {
+        setHasLoadedInitial(true);
+      }, 150);
     });
 
     const interval = setInterval(() => {
@@ -304,7 +314,14 @@ export function DrawArea({ drawIntervalMs }: DrawAreaProps) {
       />
 
       {/* Timer Cooldown Pill */}
-      <div className="bg-[#EAEAEA] flex items-center shadow-[0_4px_6px_0_rgba(0,0,0,0.25)] rounded-lg p-3 w-full max-w-[42.857vh] text-[#BD2C85] font-bold gap-2">
+      <div 
+        className={[
+          "bg-[#EAEAEA] flex items-center rounded-lg p-3 w-full max-w-[42.857vh] text-[#BD2C85] font-bold gap-2 transition-all duration-300",
+          loadPercentage >= 100
+            ? "shadow-[0_0_15px_rgba(225,11,131,0.5)] border border-[#E10B83]/30"
+            : "shadow-[0_4px_6px_0_rgba(0,0,0,0.25)] border border-transparent"
+        ].join(" ")}
+      >
         <FaClock className="text-[20px]" />
         <span>{formattedTime}</span>
 
@@ -312,7 +329,8 @@ export function DrawArea({ drawIntervalMs }: DrawAreaProps) {
           <div
             className={[
               "rounded-full animate-gradient bg-gradient-to-r from-[#FA6DBD] via-[#9F267B] via-[#E10B83] to-[#FA6DBD] h-full",
-              isFastForwarding ? "" : "transition-all duration-1000 ease-linear"
+              isFastForwarding || !hasLoadedInitial ? "" : "transition-all duration-1000 ease-linear",
+              loadPercentage >= 100 ? "shadow-[0_0_10px_#FA6DBD,0_0_20px_#E10B83] animate-pulse" : ""
             ].join(" ")}
             style={{ width: `${loadPercentage}%` }}
           />
