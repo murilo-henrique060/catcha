@@ -43,7 +43,7 @@ type Gift = {
   status?: string;
 };
 
-type AmigosWidgetProps = {
+type FriendsWidgetProps = {
   initialFriendships: Friendship[];
   initialTrades: { incoming: Trade[], outgoing: Trade[] };
   initialGifts: { incoming: Gift[], outgoing: Gift[] };
@@ -59,7 +59,7 @@ type ModalState = {
   rarityFilter?: string;
 };
 
-export function AmigosWidget({ initialFriendships, initialTrades, initialGifts, currentUserId }: AmigosWidgetProps) {
+export function FriendsWidget({ initialFriendships, initialTrades, initialGifts, currentUserId }: FriendsWidgetProps) {
   const { refreshProfile, notifications } = useUser();
   const [friendships, setFriendships] = useState<Friendship[]>(initialFriendships);
   const [trades, setTrades] = useState(initialTrades);

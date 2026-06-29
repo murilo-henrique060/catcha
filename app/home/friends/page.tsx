@@ -4,10 +4,10 @@ import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { getUserProfile } from "@/lib/controllers/UserController";
 import { getFriendships } from "@/lib/controllers/FriendController";
-import { AmigosWidget } from "@/ui/widgets/amigos-widget";
+import { FriendsWidget } from "@/ui/widgets/friends-widget";
 import { FriendsSkeleton } from "@/ui/components/skeletons";
 
-export default async function AmigosPage() {
+export default async function FriendsPage() {
   return (
     <Suspense fallback={<FriendsSkeleton />}>
       <FriendsContent />
@@ -35,7 +35,7 @@ async function FriendsContent() {
 
   return (
     <section className="flex-grow">
-      <AmigosWidget 
+      <FriendsWidget 
         initialFriendships={friendships} 
         initialTrades={activeTrades}
         initialGifts={giftsHistory}

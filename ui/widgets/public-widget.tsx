@@ -13,12 +13,12 @@ type PublicPlayer = {
   isOutgoingRequest: boolean;
 };
 
-type PublicoWidgetProps = {
+type PublicWidgetProps = {
   players: PublicPlayer[];
   totalCatsCount: number;
 };
 
-export function PublicoWidget({ players: initialPlayers, totalCatsCount }: PublicoWidgetProps) {
+export function PublicWidget({ players: initialPlayers, totalCatsCount }: PublicWidgetProps) {
   const [players, setPlayers] = useState<PublicPlayer[]>(initialPlayers);
   const [search, setSearch] = useState("");
   const [isProcessing, setIsProcessing] = useState<string | null>(null);
