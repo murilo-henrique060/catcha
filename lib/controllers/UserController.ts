@@ -33,14 +33,43 @@ export const getUserProfile = cache(async (userId?: string) => {
   }
 
   // Fetch profile from public.profiles
-  const { data: profile, error: profileError } = await supabase
+  const { data: fetchedProfile, error: profileError } = await supabase
     .from('profiles')
     .select('*')
     .eq('id', targetUserId)
     .maybeSingle();
 
-  if (profileError || !profile) {
+  if (profileError) {
     console.error("Error fetching user profile:", profileError);
+    return null;
+  }
+
+  let profile = fetchedProfile;
+
+  // Self-healing: if the authenticated user is missing their profiles table entry, create one
+  if (!profile && !userId) {
+    const shortId = targetUserId.substring(0, 8);
+    const defaultUsername = `user_${shortId}`;
+    
+    console.log(`Self-healing: Profile missing for user ${targetUserId}. Auto-creating profile with username ${defaultUsername}...`);
+
+    const { data: newProfile, error: insertError } = await supabase
+      .from('profiles')
+      .insert({
+        id: targetUserId,
+        username: defaultUsername,
+        money: 100, // default starting money
+      })
+      .select()
+      .maybeSingle();
+
+    if (insertError || !newProfile) {
+      console.error("Self-healing: Failed to auto-create missing profile:", insertError);
+      return null;
+    }
+    profile = newProfile;
+  } else if (!profile) {
+    // If querying another player's profile who doesn't exist
     return null;
   }
 
