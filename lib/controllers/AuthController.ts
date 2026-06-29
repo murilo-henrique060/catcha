@@ -248,3 +248,22 @@ export async function logout() {
   await supabase.auth.signOut();
   redirect("/auth/login");
 }
+export async function forgotPassword(request: { email: string }) {
+  const supabase = await createSupabaseServerClient();
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+
+  const { error } = await supabase.auth.resetPasswordForEmail(request.email, {
+    redirectTo: `${siteUrl}/auth/change-password`,
+  });
+
+  if (error) {
+    console.error("Error resetting password:", error);
+    return {
+      errors: {
+        general: { errors: "Não foi possível enviar o e-mail de recuperação agora. Tente novamente em instantes." },
+      },
+    };
+  }
+
+  return { success: true };
+}
