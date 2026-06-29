@@ -1,36 +1,46 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Catcha
 
-## Getting Started
+![Catcha Logo](public/images/logo.png)
 
-First, run the development server:
+Bem-vindo ao **Catcha**, um jogo de coleção e troca de cartas baseado na web! Sorteie cartas de gatos fofos e raros, complete seu álbum e faça trocas com seus amigos para colecionar todos.
+
+## Funcionalidades
+
+- 🐾 **Colete Cartas**: Sorteie cartas geradas aleatoriamente com várias raridades (Comum, Incomum, Rara, Épica, Lendária, Mítica).
+- 🤝 **Trocas e Presentes**: Proponha, faça contrapropostas e aceite trocas de cartas com seus amigos, ou envie cartas repetidas como presentes.
+- 🛒 **Economia no Jogo**: Venda cartas repetidas para ganhar moedas e compre itens consumíveis na loja para acelerar o tempo de espera dos seus sorteios.
+- 🌐 **Intercâmbios Globais**: Junte suas cartas em eventos de intercâmbio global para tentar conseguir cartas de raridades maiores!
+
+## Tecnologias Utilizadas
+
+- **Frontend**: [Next.js](https://nextjs.org/) (App Router), React, Tailwind CSS
+- **Backend & Banco de Dados**: [Supabase](https://supabase.com/) (PostgreSQL)
+- **Autenticação**: Supabase Auth (Verificação por E-mail)
+- **Armazenamento (Storage)**: Supabase Storage (Buckets Públicos para as Imagens das Cartas)
+
+## Documentação
+
+A documentação completa do projeto está disponível no diretório `/docs`:
+
+- 📖 [Índice Principal da Documentação](./docs/index.md)
+- 🛠️ [Guia de Desenvolvimento Local](./docs/development.md)
+- 🚀 [Guia de Implantação em Produção](./docs/deploy.md)
+- ⚙️ [Controladores do Backend & Diagrama PlantUML](./docs/backend/controllers.md)
+- 🗄️ [Esquema do Banco de Dados](./docs/database/schema.md)
+
+## Início Rápido (Desenvolvimento)
+
+Para começar o desenvolvimento local, certifique-se de ter o Docker e o pnpm instalados e, em seguida, execute:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+pnpm install
+supabase start
+supabase db reset
+pnpm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Para instruções completas de configuração e requisitos de variáveis de ambiente, consulte o [Guia de Desenvolvimento Local](./docs/development.md).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Licença
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Este projeto está licenciado sob a Licença MIT.
