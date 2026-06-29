@@ -4,6 +4,15 @@ import { createSupabaseServerClient } from "@/lib/services/supabase/server";
 import { getUserProfile } from "./UserController";
 import { revalidatePath } from "next/cache";
 
+/**
+ * Inicia uma oferta de troca de cartas com um amigo.
+ * Valida a regra de limite de 1 troca ativa simultânea para ambos os usuários.
+ * A carta oferecida é deduzida do inventário do remetente e fica "presa" na troca.
+ *
+ * @param friendId - UUID do amigo com quem deseja trocar.
+ * @param catId - O ID da carta que está sendo oferecida.
+ * @returns Objeto com sucesso ou o erro especificando a regra violada.
+ */
 export async function createTradeOffer(friendId: string, catId: number) {
   const supabase = await createSupabaseServerClient();
   const user = await getUserProfile();
@@ -90,6 +99,15 @@ export async function createTradeOffer(friendId: string, catId: number) {
   return { success: true };
 }
 
+/**
+ * Responde a uma oferta de troca ('pending') propondo uma carta em troca.
+ * A carta da contraproposta é deduzida do inventário do destinatário e fica "presa".
+ * O status da troca muda para 'countered'.
+ *
+ * @param tradeId - O UUID da troca sendo contraproposta.
+ * @param counterCatId - O ID da carta oferecida em contrapartida.
+ * @returns Objeto indicando sucesso ou o erro encontrado.
+ */
 export async function counterTradeOffer(tradeId: string, counterCatId: number) {
   const supabase = await createSupabaseServerClient();
   const user = await getUserProfile();
@@ -165,6 +183,14 @@ export async function counterTradeOffer(tradeId: string, counterCatId: number) {
   return { success: true };
 }
 
+/**
+ * Aceita uma contraproposta ('countered').
+ * Finaliza a troca trocando as cartas: a carta do remetente original vai para o destinatário e vice-versa.
+ * O status da troca muda para 'completed' liberando ambos para novas trocas.
+ *
+ * @param tradeId - O UUID da troca a ser aceita.
+ * @returns Objeto indicando o sucesso da transação.
+ */
 export async function acceptTrade(tradeId: string) {
   const supabase = await createSupabaseServerClient();
   const user = await getUserProfile();
@@ -195,6 +221,13 @@ export async function acceptTrade(tradeId: string) {
   return { success: true };
 }
 
+/**
+ * Rejeita uma contraproposta ou oferta pendente de outro usuário.
+ * Devolve as cartas "presas" para os seus respectivos donos originais e marca a troca como 'rejected'.
+ *
+ * @param tradeId - O UUID da troca sendo rejeitada.
+ * @returns Objeto indicando o sucesso.
+ */
 export async function rejectTrade(tradeId: string) {
   const supabase = await createSupabaseServerClient();
   const user = await getUserProfile();
@@ -225,6 +258,13 @@ export async function rejectTrade(tradeId: string) {
   return { success: true };
 }
 
+/**
+ * Cancela uma oferta de troca iniciada pelo próprio usuário.
+ * Devolve as cartas "presas" para os seus respectivos donos e marca a troca como 'cancelled'.
+ *
+ * @param tradeId - O UUID da troca a ser cancelada.
+ * @returns Objeto indicando o sucesso.
+ */
 export async function cancelTrade(tradeId: string) {
   const supabase = await createSupabaseServerClient();
   const user = await getUserProfile();
@@ -252,6 +292,12 @@ export async function cancelTrade(tradeId: string) {
   return { success: true };
 }
 
+/**
+ * Busca o histórico de trocas e as trocas ativas associadas a um perfil.
+ * 
+ * @param profileId - O UUID do usuário.
+ * @returns Objeto agrupando as trocas de chegada (`incoming`) e de saída (`outgoing`).
+ */
 export async function getActiveTrades(profileId: string) {
   const supabase = await createSupabaseServerClient();
   

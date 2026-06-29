@@ -28,6 +28,14 @@ export type ChangePasswordRequest = {
   confirmPassword: string;
 };
 
+/**
+ * Registra um novo usuário no sistema utilizando Supabase Auth.
+ * Se o cadastro for bem-sucedido, o Supabase enviará um e-mail de verificação automaticamente.
+ * Também cria o registro base na tabela `profiles`.
+ *
+ * @param request - Dados do registro (email, senha, confirmação de senha, username).
+ * @returns Objeto com erros de validação/execução ou nulo em caso de sucesso.
+ */
 export async function register(request: RegisterRequest) {
   const supabase = await createSupabaseServerClient();
 
@@ -114,6 +122,14 @@ export async function register(request: RegisterRequest) {
   return { errors: null };
 }
 
+/**
+ * Autentica o usuário utilizando e-mail e senha.
+ * Lida de forma especial com contas cujo e-mail ainda não foi confirmado,
+ * reenviando o e-mail de verificação e retornando uma flag específica `emailNotConfirmed: true`.
+ *
+ * @param request - Dados de login (email e senha).
+ * @returns Objeto com erros ou nulo em caso de login bem-sucedido.
+ */
 export async function login(request: LoginRequest) {
   const supabase = await createSupabaseServerClient();
 
@@ -179,6 +195,12 @@ export async function login(request: LoginRequest) {
   return { errors: null };
 }
 
+/**
+ * Verifica o token de e-mail enviado para o usuário (Link Mágico/OTP de Signup).
+ *
+ * @param request - O token gerado e os detalhes de redirecionamento.
+ * @returns Objeto com erros ou nulo se a confirmação for efetuada com sucesso.
+ */
 export async function confirmEmail(request: ConfirmEmailRequest) {
   const supabase = await createSupabaseServerClient();
 
@@ -197,6 +219,12 @@ export async function confirmEmail(request: ConfirmEmailRequest) {
   return { error };
 }
 
+/**
+ * Altera a senha do usuário atualmente autenticado.
+ * 
+ * @param request - O objeto com a nova senha e a confirmação.
+ * @returns Objeto com erros de validação/atualização ou nulo se bem-sucedido.
+ */
 export async function changePassword(request: ChangePasswordRequest) {
   const supabase = await createSupabaseServerClient();
 
@@ -232,6 +260,11 @@ export async function changePassword(request: ChangePasswordRequest) {
   return { errors: null };
 }
 
+/**
+ * Retorna os dados do usuário autenticado atual extraídos da sessão de cookies do Supabase.
+ *
+ * @returns Os dados do usuário (AuthUser) ou null se não estiver autenticado.
+ */
 export async function getCurrentUser() {
   const supabase = await createSupabaseServerClient();
   const { data, error } = await supabase.auth.getUser();
@@ -243,11 +276,20 @@ export async function getCurrentUser() {
   return data.user;
 }
 
+/**
+ * Encerra a sessão atual do usuário (logout) e o redireciona para a tela de login.
+ */
 export async function logout() {
   const supabase = await createSupabaseServerClient();
   await supabase.auth.signOut();
   redirect("/auth/login");
 }
+/**
+ * Solicita um link de recuperação de senha por e-mail (Forgot Password).
+ * 
+ * @param request - O e-mail do usuário.
+ * @returns Objeto indicando o sucesso da operação ou uma mensagem genérica de erro.
+ */
 export async function forgotPassword(request: { email: string }) {
   const supabase = await createSupabaseServerClient();
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";

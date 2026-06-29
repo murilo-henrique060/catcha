@@ -3,6 +3,13 @@
 import { createSupabaseServerClient } from "@/lib/services/supabase/server";
 import { revalidatePath } from "next/cache";
 
+/**
+ * Envia uma solicitação de amizade para outro usuário.
+ * Verifica se já existe uma amizade (ou solicitação pendente) antes de enviar.
+ *
+ * @param receiverId - O UUID do usuário que receberá o pedido.
+ * @returns Objeto de sucesso ou erro (ex: se já forem amigos).
+ */
 export async function sendFriendRequest(receiverId: string) {
   const supabase = await createSupabaseServerClient();
   const { data: { user }, error: authError } = await supabase.auth.getUser();
@@ -49,6 +56,12 @@ export async function sendFriendRequest(receiverId: string) {
   return { success: true };
 }
 
+/**
+ * Aceita uma solicitação de amizade que foi enviada para o usuário autenticado.
+ *
+ * @param senderId - O UUID do usuário que enviou o pedido originalmente.
+ * @returns Objeto indicando sucesso ou a mensagem de erro.
+ */
 export async function acceptFriendRequest(senderId: string) {
   const supabase = await createSupabaseServerClient();
   const { data: { user }, error: authError } = await supabase.auth.getUser();
@@ -71,6 +84,13 @@ export async function acceptFriendRequest(senderId: string) {
   return { success: true };
 }
 
+/**
+ * Recusa (exclui) uma solicitação de amizade pendente enviada para o usuário autenticado,
+ * ou remove um amigo existente da lista.
+ *
+ * @param senderId - O UUID do usuário que enviou o pedido ou do amigo a ser removido.
+ * @returns Objeto indicando sucesso ou a mensagem de erro.
+ */
 export async function declineFriendRequest(senderId: string) {
   const supabase = await createSupabaseServerClient();
   const { data: { user }, error: authError } = await supabase.auth.getUser();
@@ -94,6 +114,12 @@ export async function declineFriendRequest(senderId: string) {
   return { success: true };
 }
 
+/**
+ * Busca a lista completa de conexões do usuário atual, divididas em:
+ * amigos confirmados, solicitações recebidas (pendentes) e solicitações enviadas.
+ *
+ * @returns Um objeto com 3 arrays: `friends`, `incomingRequests` e `outgoingRequests`.
+ */
 export async function getFriendships() {
   const supabase = await createSupabaseServerClient();
   const { data: { user }, error: authError } = await supabase.auth.getUser();
@@ -149,6 +175,12 @@ export async function getFriendships() {
   }).filter((f): f is Exclude<typeof f, null> => f !== null);
 }
 
+/**
+ * Busca uma lista de todos os usuários (jogadores públicos) cadastrados no jogo.
+ * Retorna as informações públicas como username, foto e as cartas que cada um possui.
+ *
+ * @returns Um array contendo os dados dos jogadores e seus álbuns.
+ */
 export async function getPublicPlayers() {
   const supabase = await createSupabaseServerClient();
   const { data: { user }, error: authError } = await supabase.auth.getUser();

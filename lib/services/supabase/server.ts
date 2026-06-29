@@ -2,6 +2,13 @@ import { cookies } from "next/headers";
 
 import { createServerClient } from "@supabase/ssr";
 
+/**
+ * Cria uma instância do cliente Supabase para o lado do servidor (Server Actions e Server Components).
+ * Extrai e insere os cookies automaticamente, garantindo que as chamadas ao banco de dados herdem a 
+ * sessão do usuário e o Row-Level Security (RLS) funcione corretamente.
+ *
+ * @returns Instância do cliente Supabase.
+ */
 export async function createSupabaseServerClient() {
   const cookieStore = await cookies();
 

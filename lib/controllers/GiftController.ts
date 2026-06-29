@@ -8,6 +8,16 @@ import { revalidatePath } from "next/cache";
 const GIFT_COOLDOWN_MS = 5 * 60 * 60 * 1000;
 const MAX_GIFTS_PER_DAY = 5;
 
+/**
+ * Envia uma carta como presente para um amigo.
+ * Aplica validações de cooldown (espera de 5h por amigo) e limite diário (máx 5 presentes recebidos/dia).
+ * A carta é deduzida do inventário do remetente e o presente fica como 'pending' (pendente)
+ * até o destinatário resgatar.
+ *
+ * @param friendId - UUID do amigo recebendo o presente.
+ * @param catId - O ID da carta sendo enviada.
+ * @returns Objeto com sucesso ou erro caso viole alguma regra.
+ */
 export async function sendGift(friendId: string, catId: number) {
   const supabase = await createSupabaseServerClient();
   const user = await getUserProfile();
@@ -125,6 +135,13 @@ export async function sendGift(friendId: string, catId: number) {
   return { success: true };
 }
 
+/**
+ * Resgata um presente pendente que foi enviado ao usuário atual.
+ * A carta é adicionada ao inventário do destinatário e o status do presente muda para 'received' (recebido).
+ *
+ * @param giftId - UUID do registro do presente.
+ * @returns Objeto com sucesso ou erro caso o presente não seja encontrado/válido.
+ */
 export async function receiveGift(giftId: string) {
   const supabase = await createSupabaseServerClient();
   const user = await getUserProfile();
@@ -178,6 +195,12 @@ export async function receiveGift(giftId: string) {
   return { success: true };
 }
 
+/**
+ * Busca o histórico de presentes enviados e recebidos por um determinado usuário.
+ * 
+ * @param profileId - O UUID do usuário para o qual consultar o histórico.
+ * @returns Um objeto agrupando os presentes de chegada (`incoming`) e de saída (`outgoing`).
+ */
 export async function getGiftsHistory(profileId: string) {
   const supabase = await createSupabaseServerClient();
   

@@ -6,6 +6,15 @@ import { getUserCards } from "./CardController";
 import { getUserItems } from "./ItemController";
 import { getCurrentExchange } from "./ExchangeController";
 
+/**
+ * Busca os detalhes do perfil de um usuário (ou do usuário autenticado se `userId` não for fornecido).
+ * Além das informações básicas, esta função calcula estatísticas agregadas (como quantidade de amigos, 
+ * presentes recebidos pendentes, e trocas pendentes) para exibir notificações na interface.
+ * Esta função utiliza o `cache` do React para deduzir chamadas duplicadas no mesmo ciclo de renderização.
+ *
+ * @param userId - (Opcional) O UUID do perfil a buscar.
+ * @returns Os dados completos do perfil com agregações ou `null` em caso de falha.
+ */
 export const getUserProfile = cache(async (userId?: string) => {
   const supabase = await createSupabaseServerClient();
 
@@ -112,6 +121,12 @@ export const getUserProfile = cache(async (userId?: string) => {
   };
 });
 
+/**
+ * Verifica no banco de dados se um determinado nome de usuário já está sendo utilizado por outro perfil.
+ *
+ * @param username - O nome de usuário a ser verificado.
+ * @returns Verdadeiro (true) se o nome estiver disponível, Falso (false) se já existir ou houver erro.
+ */
 export async function checkUsernameExists(username: string) {
   const supabase = await createSupabaseServerClient();
   const { count, error } = await supabase
@@ -127,6 +142,12 @@ export async function checkUsernameExists(username: string) {
   return (count || 0) > 0;
 }
 
+/**
+ * Atualiza o nome de usuário (username) do perfil do usuário autenticado.
+ * 
+ * @param newUsername - O novo nome de usuário a ser salvo.
+ * @returns Objeto contendo erros em caso de falha de validação/duplicação ou sucesso.
+ */
 export async function updateUsername(newUsername: string) {
   const supabase = await createSupabaseServerClient();
   const { data, error: authError } = await supabase.auth.getUser();
@@ -180,6 +201,12 @@ export async function updateUsername(newUsername: string) {
 
 import { createClient } from "@supabase/supabase-js";
 
+/**
+ * Deleta permanentemente a conta do usuário autenticado e todos os seus dados associados
+ * (cartas, trocas, presentes, etc) conforme definido no banco de dados.
+ *
+ * @returns Objeto contendo as mensagens de erro ou indicador de sucesso.
+ */
 export async function deleteAccount() {
   const supabase = await createSupabaseServerClient();
   const { data, error: authError } = await supabase.auth.getUser();

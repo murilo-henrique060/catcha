@@ -84,6 +84,12 @@ async function executeCardDraw(supabase: SupabaseClient, userId: string) {
 }
 
 // Draw method (standard cooldown check)
+/**
+ * Executa o sorteio de uma nova carta para o usuário atual, se o tempo de espera (cooldown) tiver acabado.
+ * Adiciona a carta sorteada ao inventário do usuário e redefine o próximo tempo de sorteio (`next_draw`).
+ *
+ * @returns Objeto com a carta sorteada em caso de sucesso ou o erro (ex: tempo não decorrido).
+ */
 export async function drawCard() {
   const supabase = await createSupabaseServerClient();
   const { data: { user }, error: authError } = await supabase.auth.getUser();
@@ -137,6 +143,12 @@ export async function drawCard() {
 }
 
 // Accelerate method (skip cooldown using 1 accelerate item)
+/**
+ * Acelera o tempo do próximo sorteio consumindo um item de "skip" do inventário do usuário.
+ * Subtrai o valor de efeito (em milissegundos) do tempo `next_draw` original e deduz o item.
+ *
+ * @returns Objeto indicando o sucesso da aceleração e a quantidade restante do item.
+ */
 export async function accelerateDraw() {
   const supabase = await createSupabaseServerClient();
   const { data: { user }, error: authError } = await supabase.auth.getUser();
@@ -235,6 +247,13 @@ export async function accelerateDraw() {
   }
 }
 
+/**
+ * Permite ao usuário comprar uma carta específica diretamente com moedas.
+ * Deduz o valor monetário do perfil do usuário e adiciona a carta ao inventário.
+ *
+ * @param catId - O ID da carta a ser comprada.
+ * @returns Objeto com sucesso e a carta adquirida, ou erro caso moedas insuficientes.
+ */
 export async function buyCat(catId: number) {
   const supabase = await createSupabaseServerClient();
 
@@ -312,6 +331,13 @@ export async function buyCat(catId: number) {
   return { success: true, cat };
 }
 
+/**
+ * Vende uma carta duplicada do inventário do usuário, convertendo a raridade da carta
+ * em moedas, que são creditadas ao saldo do usuário.
+ *
+ * @param catId - O ID da carta a ser vendida.
+ * @returns Objeto com sucesso e o valor de venda, ou erro em caso de falha de validação.
+ */
 export async function sellCat(catId: number) {
   const supabase = await createSupabaseServerClient();
 
@@ -377,6 +403,11 @@ export async function sellCat(catId: number) {
   return { success: true, price };
 }
 
+/**
+ * Busca todas as cartas disponíveis no banco de dados.
+ *
+ * @returns Array de todas as cartas.
+ */
 export async function getAllCats() {
   const supabase = await createSupabaseServerClient();
   const { data, error } = await supabase

@@ -1,8 +1,18 @@
 import { createSupabaseServerClient } from "@/lib/services/supabase/server";
 
+/**
+ * Intervalo padrão entre sorteios gratuitos em horas.
+ */
 export const DRAW_INTERVAL_HOURS = 1;
+
+/**
+ * Intervalo padrão entre sorteios em milissegundos.
+ */
 export const DRAW_INTERVAL_MS = DRAW_INTERVAL_HOURS * 60 * 60 * 1000;
 
+/**
+ * As chances baseadas nas raridades do jogo para sorteios.
+ */
 export const RARITY_CHANCES = {
   S: 0.05,
   A: 0.15,
@@ -10,7 +20,12 @@ export const RARITY_CHANCES = {
   C: 0.50,
 };
 
-// Rarity values (Sell prices)
+/**
+ * Retorna o valor de venda em moedas de uma carta baseado em sua raridade.
+ *
+ * @param rarity - A raridade da carta (S, A, B ou C).
+ * @returns O valor em moedas da carta.
+ */
 export async function getRarityValue(rarity: string): Promise<number> {
   switch (rarity) {
     case 'S': return 1000;
@@ -20,11 +35,23 @@ export async function getRarityValue(rarity: string): Promise<number> {
   }
 }
 
-// Buy price
+/**
+ * Retorna o preço de compra de uma carta baseada em sua raridade.
+ * (Atualmente equivale ao valor de venda).
+ *
+ * @param rarity - A raridade da carta.
+ * @returns O preço de compra em moedas.
+ */
 export async function getBuyPrice(rarity: string): Promise<number> {
   return getRarityValue(rarity); // S = 1000, A = 500, B = 200, C = 100
 }
 
+/**
+ * Retorna uma contagem de todas as cartas existentes no banco de dados,
+ * agrupadas pelas suas respectivas raridades. Utilizado para estatísticas e interface do usuário.
+ *
+ * @returns Um objeto mapeando a raridade (S, A, B, C) para o total existente.
+ */
 export async function getCardsCountPerRarity() {
   const supabase = await createSupabaseServerClient();
   const { data, error } = await supabase
@@ -46,6 +73,13 @@ export async function getCardsCountPerRarity() {
   return counts;
 }
 
+/**
+ * Busca todas as cartas que um determinado usuário possui (o seu álbum).
+ * Traz as propriedades da carta, a quantidade que o usuário possui e o caminho da imagem.
+ *
+ * @param profileId - O UUID do usuário.
+ * @returns Uma lista de objetos contendo quantidade e a própria carta.
+ */
 export async function getUserCards(profileId: string) {
   const supabase = await createSupabaseServerClient();
   
