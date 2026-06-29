@@ -139,6 +139,15 @@ export async function login(request: LoginRequest) {
     console.error("Supabase login error:", error);
     const lowerMessage = (error.message || "").toLowerCase();
     if (lowerMessage.includes("email not confirmed")) {
+      // Automatically resend verification email
+      await supabase.auth.resend({
+        type: 'signup',
+        email: validationResult.data.email,
+        options: {
+          emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'}/auth/callback`,
+        }
+      });
+
       return {
         errors: {
           general: { errors: "Confirme seu e-mail para continuar." },

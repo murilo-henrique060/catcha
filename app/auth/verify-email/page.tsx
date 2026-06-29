@@ -45,7 +45,7 @@ export default async function VerifyEmailPage({ searchParams }: VerifyEmailPageP
 
         <p className="mt-3 text-sm text-[#B01070]">{
           reason === "login"
-            ? "Seu e-mail ainda não foi verificado. Confira sua caixa de entrada para ativar a conta."
+            ? "Seu e-mail ainda não foi verificado. Enviamos um novo link de confirmação para sua caixa de entrada para você ativar a conta."
             : reason === "recovery"
               ? "Enviamos um link de recuperacao de senha para seu e-mail. Abra a mensagem para continuar."
               : "Enviamos um link de confirmação para seu e-mail. Abra a mensagem e clique no link para ativar sua conta."
