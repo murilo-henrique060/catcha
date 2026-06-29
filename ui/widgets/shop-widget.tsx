@@ -480,15 +480,14 @@ export function ShopWidget({ allCats }: ShopWidgetProps) {
                     </div>
                   </>
                 )}
+                {/* Actions select button */}
+                <button
+                  onClick={handleMenuSelect}
+                  className="w-full py-3.5 rounded-2xl bg-[#B01070] hover:bg-[#FF99D7] text-white font-extrabold italic uppercase tracking-wider text-[14px] shadow-md transition-colors cursor-pointer select-none"
+                >
+                  SELECIONAR
+                </button>
               </div>
-
-              {/* Actions select button */}
-              <button
-                onClick={handleMenuSelect}
-                className="w-full py-3.5 rounded-2xl bg-[#B01070] hover:bg-[#FF99D7] text-white font-extrabold italic uppercase tracking-wider text-[14px] shadow-md transition-colors cursor-pointer select-none"
-              >
-                SELECIONAR
-              </button>
             </div>
           ) : (
             /* ================= SUB-GRID RIGHT SIDE PREVIEW ================= */
@@ -498,7 +497,7 @@ export function ShopWidget({ allCats }: ShopWidgetProps) {
                 {/* LARGE 3D Card Widget */}
                 <div className="flex-grow flex items-center justify-center w-full">
                   <CardWidget
-                    className="h-[calc(100vh-390px)] w-[calc((100vh-390px)*0.714)] max-h-[345px] max-w-[246px]"
+                    className="h-[calc(100vh-420px)] w-[calc((100vh-420px)*0.714)] max-h-[290px] max-w-[207px]"
                     title={selectedCat.name}
                     rarity={mapRarity(selectedCat.rarity)}
                     start_face={CardFace.FRONT}
@@ -541,15 +540,14 @@ export function ShopWidget({ allCats }: ShopWidgetProps) {
                       </span>
                     </div>
                   </div>
+                  {/* Sell/Buy Action Trigger */}
+                  <button
+                    onClick={() => setShowConfirmModal(true)}
+                    className="w-full mt-2.5 py-3 rounded-2xl bg-[#B01070] hover:bg-[#FF99D7] text-white font-extrabold italic uppercase tracking-wider text-[13px] shadow-md transition-colors cursor-pointer select-none"
+                  >
+                    SELECIONAR
+                  </button>
                 </div>
-
-                {/* Sell/Buy Action Trigger */}
-                <button
-                  onClick={() => setShowConfirmModal(true)}
-                  className="w-full mt-4 py-3.5 rounded-2xl bg-[#B01070] hover:bg-[#FF99D7] text-white font-extrabold italic uppercase tracking-wider text-[14px] shadow-md transition-colors cursor-pointer select-none"
-                >
-                  SELECIONAR
-                </button>
               </div>
             ) : (
               <div className="w-full max-w-[420px] h-full rounded-3xl bg-gray-50 border border-dashed border-gray-300 flex flex-col items-center justify-center text-gray-400 gap-2">
