@@ -44,8 +44,8 @@ export async function sendFriendRequest(receiverId: string) {
     return { error: "Erro ao enviar solicitação de amizade" };
   }
 
-  revalidatePath("/home/publico");
-  revalidatePath("/home/amigos");
+  revalidatePath("/home/public");
+  revalidatePath("/home/friends");
   return { success: true };
 }
 
@@ -66,8 +66,8 @@ export async function acceptFriendRequest(senderId: string) {
     return { error: "Erro ao aceitar solicitação" };
   }
 
-  revalidatePath("/home/amigos");
-  revalidatePath("/home/publico");
+  revalidatePath("/home/friends");
+  revalidatePath("/home/public");
   return { success: true };
 }
 
@@ -89,8 +89,8 @@ export async function declineFriendRequest(senderId: string) {
     return { error: "Erro ao recusar solicitação" };
   }
 
-  revalidatePath("/home/amigos");
-  revalidatePath("/home/publico");
+  revalidatePath("/home/friends");
+  revalidatePath("/home/public");
   return { success: true };
 }
 

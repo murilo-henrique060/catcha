@@ -146,7 +146,7 @@ export function PublicoWidget({ players: initialPlayers, totalCatsCount }: Publi
               <div className="w-full grid grid-cols-2 gap-3 pl-2">
                 {/* View Album Link */}
                 <Link
-                  href={`/home/publico/${player.username}`}
+                  href={`/home/public/${player.username}`}
                   className="flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl border border-gray-200 hover:border-[#B01070] hover:text-[#B01070] text-gray-600 font-bold uppercase text-[11px] tracking-wider transition-colors shadow-sm select-none cursor-pointer"
                 >
                   <FaBookOpen />
@@ -174,7 +174,7 @@ export function PublicoWidget({ players: initialPlayers, totalCatsCount }: Publi
 
                 {player.friendshipStatus === "pending" && !player.isOutgoingRequest && (
                   <Link
-                    href="/home/amigos"
+                    href="/home/friends"
                     className="flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl bg-pink-50 border border-pink-200 text-[#B01070] font-bold uppercase text-[11px] tracking-wider transition-colors hover:bg-pink-100/50 select-none cursor-pointer text-center"
                   >
                     <FaUserPlus />

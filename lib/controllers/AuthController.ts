@@ -92,13 +92,24 @@ export async function register(request: RegisterRequest) {
   }
 
   if (error) {
-    return { errors: { general: { errors: "Erro ao registrar usuário." } } };
+    console.error("Supabase sign up error:", error);
+    let msg = error.message;
+    return { errors: { general: { errors: `Erro ao registrar usuário` } } };
   }
 
-  await supabase.from('profiles').insert({
+  const { error: profileError } = await supabase.from('profiles').insert({
     id: data.user?.id,
     username: validationResult.data.username.toLowerCase(),
   });
+
+  if (profileError) {
+    console.error("Profile database insertion error:", profileError);
+    return {
+      errors: {
+        general: { errors: `Erro ao criar perfil do usuário: ${profileError.message}` },
+      },
+    };
+  }
 
   return { errors: null };
 }
@@ -125,7 +136,9 @@ export async function login(request: LoginRequest) {
   });
 
   if (error) {
-    if (error.message.toLowerCase().includes("email not confirmed")) {
+    console.error("Supabase login error:", error);
+    const lowerMessage = (error.message || "").toLowerCase();
+    if (lowerMessage.includes("email not confirmed")) {
       return {
         errors: {
           general: { errors: "Confirme seu e-mail para continuar." },
@@ -134,7 +147,7 @@ export async function login(request: LoginRequest) {
       };
     }
 
-    if (error.message.toLowerCase().includes("invalid login credentials")) {
+    if (lowerMessage.includes("invalid login credentials")) {
       return {
         errors: {
           general: { errors: "E-mail ou senha inválidos." },
@@ -142,9 +155,14 @@ export async function login(request: LoginRequest) {
       };
     }
 
+    let msg = error.message;
+    if (msg === "{}" || !msg) {
+      msg = "Erro interno do servidor Supabase (500). Tente novamente mais tarde.";
+    }
+
     return {
       errors: {
-        general: { errors: error.message },
+        general: { errors: msg },
       },
     };
   }

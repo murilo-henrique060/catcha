@@ -90,7 +90,7 @@ export function AmigosWidget({ initialFriendships }: AmigosWidgetProps) {
           </div>
           
           <Link
-            href="/home/publico"
+            href="/home/public"
             className="flex items-center justify-center gap-2 py-2 px-4 rounded-xl bg-[#B01070] hover:bg-[#FF99D7] text-white font-extrabold italic uppercase text-[12px] tracking-wide transition-colors shadow-sm cursor-pointer select-none self-start sm:self-auto"
           >
             <FaUserPlus className="text-[14px]" />
@@ -189,7 +189,7 @@ export function AmigosWidget({ initialFriendships }: AmigosWidgetProps) {
                   </div>
 
                   <Link
-                    href={`/home/publico/${friend.username}`}
+                    href={`/home/public/${friend.username}`}
                     className="flex items-center justify-center gap-1.5 py-2 px-4 rounded-xl border border-[#B01070] text-[#B01070] hover:bg-[#B01070] hover:text-white font-extrabold italic uppercase text-[11px] tracking-wide transition-all shadow-sm cursor-pointer select-none"
                   >
                     <FaBookOpen />

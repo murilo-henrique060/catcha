@@ -84,7 +84,7 @@ export async function buyAccelerationItem() {
       });
   }
 
-  revalidatePath("/home/loja");
+  revalidatePath("/home/shop");
   revalidatePath("/home");
   return { success: true, item: finalItem };
 }

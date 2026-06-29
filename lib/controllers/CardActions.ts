@@ -306,7 +306,7 @@ export async function buyCat(catId: number) {
       });
   }
 
-  revalidatePath("/home/loja");
+  revalidatePath("/home/shop");
   revalidatePath("/home/album");
   revalidatePath("/home");
   return { success: true, cat };
@@ -371,7 +371,7 @@ export async function sellCat(catId: number) {
       .eq('cat_id', catId);
   }
 
-  revalidatePath("/home/loja");
+  revalidatePath("/home/shop");
   revalidatePath("/home/album");
   revalidatePath("/home");
   return { success: true, price };

@@ -20,9 +20,9 @@ type NavbarWidgetProps = {
 const navigationItems = [
   { label: "INICIO", href: "/home" },
   { label: "ÁLBUM", href: "/home/album" },
-  { label: "LOJA", href: "/home/loja" },
-  { label: "PÚBLICO", href: "/home/publico" },
-  { label: "AMIGOS", href: "/home/amigos" },
+  { label: "LOJA", href: "/home/shop" },
+  { label: "PÚBLICO", href: "/home/public" },
+  { label: "AMIGOS", href: "/home/friends" },
 ];
 
 export function NavbarWidget({ username = "Username", coins = 0, className = "" }: NavbarWidgetProps) {
