@@ -50,5 +50,4 @@ insert into public.cats (name, rarity, image_path) values
   ('Cat 46', 'S', '/cats/cat046.webp'),
   ('Cat 47', 'S', '/cats/cat047.webp'),
   ('Cat 48', 'S', '/cats/cat048.webp'),
-  ('Cat 49', 'S', '/cats/cat049.webp'),
-  ('Cat 50', 'S', '/cats/cat050.webp');
+  ('Cat 49', 'S', '/cats/cat049.webp');
