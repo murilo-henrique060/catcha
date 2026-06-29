@@ -34,6 +34,6 @@ export default async function PublicPlayerAlbumPage({ params }: PageProps) {
   const cards = await getUserCards(targetProfile.id);
 
   return (
-    <AlbumWidget username={targetProfile.username} initialCards={cards} />
+    <AlbumWidget username={targetProfile.username} initialCards={cards} backUrl="/home/public" />
   );
 }

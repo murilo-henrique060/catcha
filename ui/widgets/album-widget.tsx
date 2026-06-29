@@ -2,7 +2,8 @@
 
 import { useState, useMemo } from "react";
 import Image from "next/image";
-import { FaSearch, FaCoins, FaSortAmountDown, FaSortAmountUp } from "react-icons/fa";
+import Link from "next/link";
+import { FaSearch, FaCoins, FaSortAmountDown, FaSortAmountUp, FaArrowLeft } from "react-icons/fa";
 import { TbCardsFilled } from "react-icons/tb";
 import { CardWidget } from "./card";
 import { CardFace, CardRarity } from "./card-types";
@@ -18,6 +19,7 @@ type AlbumWidgetProps = {
       image_path: string;
     };
   }[];
+  backUrl?: string;
 };
 
 // Map card rarity string from database ('S' | 'A' | 'B' | 'C') to CardRarity enum
@@ -42,7 +44,7 @@ const getRarityValue = (rarity: string): number => {
 
 const rarityRank = { S: 4, A: 3, B: 2, C: 1 };
 
-export function AlbumWidget({ username, initialCards }: AlbumWidgetProps) {
+export function AlbumWidget({ username, initialCards, backUrl }: AlbumWidgetProps) {
   const [search, setSearch] = useState("");
   const [sortBy, setSortBy] = useState<"alpha" | "rarity" | "quantity">("rarity");
   const [sortAsc, setSortAsc] = useState(false);
@@ -99,9 +101,27 @@ export function AlbumWidget({ username, initialCards }: AlbumWidgetProps) {
         
         {/* Left Section: Title & Dropdown Filter Controls */}
         <div className="flex-grow flex flex-col sm:flex-row sm:items-center justify-between gap-4 md:pr-6">
-          <h2 className="text-[18px] font-extrabold italic uppercase tracking-wider text-[#B01070]">
-            <span className="font-normal text-[15px] text-gray-500">Álbum de</span> {username}
-          </h2>
+          <div className="flex items-center gap-3">
+            {backUrl ? (
+              <div className="flex items-center gap-2">
+                <Link
+                  href={backUrl}
+                  className="flex items-center justify-center text-[#B01070] hover:text-[#FF99D7] transition-colors cursor-pointer text-[16px]"
+                  title="Voltar"
+                >
+                  <FaArrowLeft />
+                </Link>
+                <h2 className="text-[18px] font-extrabold italic uppercase tracking-wider text-[#B01070] flex items-baseline gap-1.5 ml-1">
+                  <span className="font-normal text-[15px] text-gray-500">Álbum de</span>
+                  <span>{username}</span>
+                </h2>
+              </div>
+            ) : (
+              <h2 className="text-[18px] font-extrabold italic uppercase tracking-wider text-[#B01070]">
+                <span className="font-normal text-[15px] text-gray-500">Álbum de</span> {username}
+              </h2>
+            )}
+          </div>
           
           <div className="flex items-center gap-3">
             {/* Sort Direction Toggle */}

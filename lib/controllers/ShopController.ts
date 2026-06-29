@@ -3,7 +3,10 @@
 import { createSupabaseServerClient } from "@/lib/services/supabase/server";
 import { revalidatePath } from "next/cache";
 
-export async function buyAccelerationItem() {
+export async function buyAccelerationItem(quantity: number = 1) {
+  if (quantity < 1) {
+    return { error: "Quantidade inválida" };
+  }
   const supabase = await createSupabaseServerClient();
 
   // 1. Get current user
@@ -33,7 +36,7 @@ export async function buyAccelerationItem() {
     return { error: "Item de aceleração não cadastrado" };
   }
 
-  const price = finalItem.price;
+  const price = finalItem.price * quantity;
 
   // 3. Get user profiles balance
   const { data: profile, error: profileError } = await supabase
@@ -71,7 +74,7 @@ export async function buyAccelerationItem() {
   if (existingRecord) {
     await supabase
       .from('profiles_items')
-      .update({ quantity: existingRecord.quantity + 1 })
+      .update({ quantity: existingRecord.quantity + quantity })
       .eq('profile_id', user.id)
       .eq('item_id', finalItem.id);
   } else {
@@ -80,7 +83,7 @@ export async function buyAccelerationItem() {
       .insert({
         profile_id: user.id,
         item_id: finalItem.id,
-        quantity: 1
+        quantity: quantity
       });
   }
 

@@ -30,7 +30,7 @@ const mapRarity = (rarity: string): CardRarity => {
 };
 
 export function ShopWidget({ allCats }: ShopWidgetProps) {
-  const { cards, items, refreshProfile } = useUser();
+  const { profile, cards, items, refreshProfile } = useUser();
   
   // Navigation State
   // "menu" | "buy_cats" | "sell_cats"
@@ -56,14 +56,29 @@ export function ShopWidget({ allCats }: ShopWidgetProps) {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState("");
   const [successCat, setSuccessCat] = useState<{ name: string; rarity: string; image_path: string } | null>(null);
+  const [buyItemQuantity, setBuyItemQuantity] = useState(0);
 
-  // Reset page-level selection when switching views
+  const maxQuantity = profile ? Math.floor(profile.money / 100) : 0;
+
+  // Reset page-level selection and quantity when switching views or options
   useEffect(() => {
     Promise.resolve().then(() => {
       setSelectedCatId(null);
       setSearch("");
+      const initialQty = profile ? (Math.floor(profile.money / 100) >= 1 ? 1 : 0) : 0;
+      setBuyItemQuantity(initialQty);
     });
-  }, [currentView]);
+  }, [currentView, selectedMenuOption, profile]);
+
+  // Adjust quantity if user money changes
+  useEffect(() => {
+    if (profile) {
+      const maxQty = Math.floor(profile.money / 100);
+      if (buyItemQuantity > maxQty) {
+        setBuyItemQuantity(maxQty);
+      }
+    }
+  }, [profile, buyItemQuantity]);
 
   // Compute quantity of each card owned
   const cardsOwnedMap = useMemo(() => {
@@ -177,14 +192,15 @@ export function ShopWidget({ allCats }: ShopWidgetProps) {
           await refreshProfile();
         }
       } else if (currentView === "menu" && selectedMenuOption === "buy_items") {
-        const res = await buyAccelerationItem();
+        const res = await buyAccelerationItem(buyItemQuantity);
         if (res.error) {
           setErrorMessage(res.error);
         } else {
-          setSuccessMessage(`Você obteve 1 Aceleração de Sorteio!`);
+          setSuccessMessage(`Você obteve ${buyItemQuantity} ${buyItemQuantity === 1 ? "Aceleração" : "Acelerações"} de Sorteio!`);
           setSuccessCat(null);
           setShowConfirmModal(false);
           setShowSuccessModal(true);
+          setBuyItemQuantity(1); // Reset
           await refreshProfile();
         }
       }
@@ -477,12 +493,45 @@ export function ShopWidget({ allCats }: ShopWidgetProps) {
                         <span className="text-[16px] font-bold text-gray-600">{accelerationCount}</span>
                       </div>
                     </div>
+                    {/* Quantity selector (tightened layout) */}
+                    <div className="flex items-center justify-between gap-4 mt-3 w-full px-4 py-2 bg-gray-50/50 rounded-xl border border-gray-100/60">
+                      <div className="flex flex-col items-start gap-0.5">
+                        <span className="text-gray-400 text-[10px] font-extrabold uppercase tracking-wider leading-none">Quantidade</span>
+                        <div className="flex items-center gap-1 mt-1">
+                          <span className="text-[11px] text-gray-450 font-bold uppercase">Total:</span>
+                          <div className="flex items-center gap-0.5 font-extrabold text-[13px] text-[#B01070]">
+                            <FaCoins className="text-[13px] text-[#FFD54A] drop-shadow-sm" />
+                            <span>{(buyItemQuantity * 100).toLocaleString("pt-BR")}</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex items-center justify-between gap-3 bg-white border border-gray-200/80 rounded-full p-1 shadow-sm w-32">
+                        <button
+                          type="button"
+                          disabled={buyItemQuantity <= 0}
+                          onClick={() => setBuyItemQuantity(prev => Math.max(0, prev - 1))}
+                          className="w-7 h-7 rounded-full bg-[#B01070] text-white flex items-center justify-center font-black text-[14px] transition-all hover:bg-[#FF99D7] active:scale-95 cursor-pointer select-none disabled:opacity-30 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:text-gray-500"
+                        >
+                          -
+                        </button>
+                        <span className="font-extrabold text-[16px] text-gray-800 select-none min-w-[14px] text-center">{buyItemQuantity}</span>
+                        <button
+                          type="button"
+                          disabled={buyItemQuantity >= maxQuantity}
+                          onClick={() => setBuyItemQuantity(prev => prev + 1)}
+                          className="w-7 h-7 rounded-full bg-[#B01070] text-white flex items-center justify-center font-black text-[14px] transition-all hover:bg-[#FF99D7] active:scale-95 cursor-pointer select-none disabled:opacity-30 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:text-gray-500"
+                        >
+                          +
+                        </button>
+                      </div>
+                    </div>
                   </>
                 )}
                 {/* Actions select button */}
                 <button
                   onClick={handleMenuSelect}
-                  className="w-full py-3.5 rounded-2xl bg-[#B01070] hover:bg-[#FF99D7] text-white font-extrabold italic uppercase tracking-wider text-[14px] shadow-md transition-colors cursor-pointer select-none"
+                  disabled={selectedMenuOption === "buy_items" && buyItemQuantity === 0}
+                  className="w-full py-3.5 rounded-2xl bg-[#B01070] hover:bg-[#FF99D7] text-white font-extrabold italic uppercase tracking-wider text-[14px] shadow-md transition-colors cursor-pointer select-none disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   SELECIONAR
                 </button>
@@ -598,7 +647,7 @@ export function ShopWidget({ allCats }: ShopWidgetProps) {
                 <>Deseja vender <span className="text-[#B01070] italic">{selectedCat.name}</span> por <span className="inline-flex items-center gap-1 font-extrabold text-amber-500 whitespace-nowrap"><FaCoins />{getCatPrice(selectedCat.rarity)}?</span></>
               )}
               {currentView === "menu" && selectedMenuOption === "buy_items" && (
-                <>Deseja comprar 1 <span className="text-[#B01070] italic">Aceleração de Sorteio</span> por <span className="inline-flex items-center gap-1 font-extrabold text-amber-500 whitespace-nowrap"><FaCoins />100?</span></>
+                <>Deseja comprar {buyItemQuantity} <span className="text-[#B01070] italic">{buyItemQuantity === 1 ? "Aceleração de Sorteio" : "Acelerações de Sorteio"}</span> por <span className="inline-flex items-center gap-1 font-extrabold text-amber-500 whitespace-nowrap"><FaCoins />{buyItemQuantity * 100}?</span></>
               )}
             </p>
 
