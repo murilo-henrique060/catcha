@@ -1,11 +1,12 @@
 'use server';
 
+import { cache } from "react";
 import { createSupabaseServerClient } from "@/lib/services/supabase/server";
 import { getUserCards } from "./CardController";
 import { getUserItems } from "./ItemController";
 import { getCurrentExchange } from "./ExchangeController";
 
-export async function getUserProfile(userId?: string) {
+export const getUserProfile = cache(async (userId?: string) => {
   const supabase = await createSupabaseServerClient();
 
   let targetUserId = userId;
@@ -57,7 +58,7 @@ export async function getUserProfile(userId?: string) {
     cards,
     currentExchange,
   };
-}
+});
 
 export async function checkUsernameExists(username: string) {
   const supabase = await createSupabaseServerClient();
@@ -86,6 +87,9 @@ export async function updateUsername(newUsername: string) {
   const trimmed = newUsername.trim();
   if (trimmed.length < 3 || trimmed.length > 20) {
     return { error: "O nome de usuário deve ter entre 3 e 20 caracteres" };
+  }
+  if (!/^[a-zA-Z0-9_]+$/.test(trimmed)) {
+    return { error: "O nome de usuário deve conter apenas letras, números e sublinhados (_)" };
   }
 
   const { data: existing, error: checkError } = await supabase

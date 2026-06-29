@@ -34,7 +34,8 @@ export async function register(request: RegisterRequest) {
   const registerSchema = z.object({
     username: z.string("Nome de usuário é obrigatório.")
       .min(3, "Nome de usuário deve ter no mínimo 3 caracteres.")
-      .max(20, "Nome de usuário deve ter no máximo 20 caracteres."),
+      .max(20, "Nome de usuário deve ter no máximo 20 caracteres.")
+      .regex(/^[a-zA-Z0-9_]+$/, "O nome de usuário deve conter apenas letras, números e sublinhados (_)"),
 
     email: z.email("Email inválido"),
 
