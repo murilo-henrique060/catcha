@@ -15,10 +15,10 @@ CREATE POLICY "Permitir leitura de perfis por qualquer usuário autenticado"
   TO authenticated 
   USING (true);
 
-CREATE POLICY "Permitir inserção do próprio perfil" 
+CREATE POLICY "Permitir inserção de perfil" 
   ON public.profiles FOR INSERT 
   TO authenticated, anon
-  WITH CHECK (auth.uid() = id);
+  WITH CHECK (true);
 
 CREATE POLICY "Permitir atualização do próprio perfil" 
   ON public.profiles FOR UPDATE 
