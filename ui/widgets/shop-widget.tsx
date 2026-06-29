@@ -197,7 +197,7 @@ export function ShopWidget({ allCats }: ShopWidgetProps) {
   };
 
   return (
-    <div className={["flex-grow flex flex-col select-none", currentView === "menu" ? "mx-auto w-full max-w-[1366px] px-4 pt-3 pb-6" : ""].filter(Boolean).join(" ")}>
+    <div className={["flex-grow flex flex-col select-none", currentView === "menu" ? "mx-auto w-full px-4 pt-3" : ""].filter(Boolean).join(" ")}>
       
       {/* Top Header & Filter Controls Row */}
       {currentView !== "menu" && (
@@ -296,8 +296,7 @@ export function ShopWidget({ allCats }: ShopWidgetProps) {
 
       {/* Main Content Layout */}
       <div className={[
-        "relative w-full flex flex-col lg:block",
-        currentView === "menu" ? "h-auto lg:h-[calc(100vh-130px)]" : "h-auto lg:h-[calc(100vh-230px)] mt-4"
+        "relative w-full flex-grow flex flex-col",
       ].join(" ")}>
         
         {/* Left Column: Menu list OR Cat grids */}

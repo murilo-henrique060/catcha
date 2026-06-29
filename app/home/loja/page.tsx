@@ -13,8 +13,6 @@ export default async function ShopPage() {
   const allCats = await getAllCats();
 
   return (
-    <section className="flex-grow">
-      <ShopWidget allCats={allCats} />
-    </section>
+    <ShopWidget allCats={allCats} />
   );
 }
