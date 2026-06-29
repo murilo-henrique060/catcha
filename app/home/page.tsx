@@ -12,11 +12,12 @@ export default async function HomePage() {
   }
 
   const rarityTotals = await getCardsCountPerRarity();
+  const serverTime = new Date().toISOString();
 
   return (
     <section className="flex-grow flex py-4">
       <div className="flex-grow-9 flex flex-col items-center justify-center gap-4">
-        <DrawArea drawIntervalMs={DRAW_INTERVAL_MS} />
+        <DrawArea drawIntervalMs={DRAW_INTERVAL_MS} serverTime={serverTime} />
       </div>
       <div className="flex-grow-3 flex items-center justify-center">
         <StatsWidget rarityTotals={rarityTotals} />

@@ -11,6 +11,7 @@ import { drawCard, accelerateDraw } from "@/lib/controllers/CardActions";
 
 type DrawAreaProps = {
   drawIntervalMs: number;
+  serverTime?: string;
 };
 
 // Map card rarity string from database ('S' | 'A' | 'B' | 'C') to CardRarity enum
@@ -23,9 +24,18 @@ const mapRarity = (rarity: string): CardRarity => {
   }
 };
 
-export function DrawArea({ drawIntervalMs }: DrawAreaProps) {
+export function DrawArea({ drawIntervalMs, serverTime }: DrawAreaProps) {
   const { profile, isLoading, items, refreshProfile, setProfileData } = useUser();
   const [remainingTime, setRemainingTime] = useState<number>(0);
+  const [timeOffset, setTimeOffset] = useState<number>(0);
+
+  useEffect(() => {
+    if (serverTime) {
+      const clientNow = Date.now();
+      const serverNow = new Date(serverTime).getTime();
+      setTimeOffset(serverNow - clientNow);
+    }
+  }, [serverTime]);
   const [cardWidgetProps, setCardWidgetProps] = useState({
     title: "Sorteio de Carta",
     rarity: CardRarity.C,
@@ -59,7 +69,7 @@ export function DrawArea({ drawIntervalMs }: DrawAreaProps) {
 
     const calculateRemaining = () => {
       const nextDrawTime = new Date(nextDraw).getTime();
-      const now = new Date().getTime();
+      const now = Date.now() + timeOffset;
       const diff = nextDrawTime - now;
       return Math.max(0, Math.min(drawIntervalMs, diff));
     };
@@ -197,7 +207,7 @@ export function DrawArea({ drawIntervalMs }: DrawAreaProps) {
       
       // Reset clock to actual state
       const nextDrawTime = new Date(nextDraw).getTime();
-      const now = new Date().getTime();
+      const now = Date.now() + timeOffset;
       setRemainingTime(Math.max(0, Math.min(drawIntervalMs, nextDrawTime - now)));
       return;
     }
