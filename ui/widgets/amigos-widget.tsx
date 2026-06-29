@@ -37,6 +37,7 @@ type Gift = {
   receiver_id: string;
   cat_id: number;
   created_at: string;
+  sender?: { username: string };
   receiver?: { username: string };
   cat?: { id: number, name: string, rarity: string, image_path: string };
   status?: string;
