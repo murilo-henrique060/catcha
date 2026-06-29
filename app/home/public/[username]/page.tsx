@@ -34,8 +34,6 @@ export default async function PublicPlayerAlbumPage({ params }: PageProps) {
   const cards = await getUserCards(targetProfile.id);
 
   return (
-    <section className="flex-grow">
-      <AlbumWidget username={targetProfile.username} initialCards={cards} />
-    </section>
+    <AlbumWidget username={targetProfile.username} initialCards={cards} />
   );
 }

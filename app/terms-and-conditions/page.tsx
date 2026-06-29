@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 export default function TermsAndConditionsPage() {
   return (
-    <main className="flex min-h-screen items-center justify-center bg-[url('/images/landpage-hero-background.png')] bg-cover bg-center px-6 py-12">
+    <main className="flex min-h-screen items-center justify-center bg-[url('/images/landpage-hero-background.png')] bg-cover bg-no-repeat bg-center px-6 py-12">
       <div className="w-full max-w-2xl max-h-[80vh] overflow-y-auto custom-scrollbar rounded-3xl bg-white p-8 shadow-[0_4px_6px_0_rgba(0,0,0,0.25)] text-left flex flex-col items-center">
         <Image
           className="mb-6"
