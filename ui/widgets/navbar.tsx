@@ -26,7 +26,7 @@ const navigationItems = [
 ];
 
 export function NavbarWidget({ username = "Username", coins = 0, className = "" }: NavbarWidgetProps) {
-  const { profile, isLoading, items } = useUser();
+  const { profile, isLoading, items, notifications } = useUser();
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
@@ -157,13 +157,18 @@ export function NavbarWidget({ username = "Username", coins = 0, className = "" 
                 href={item.href}
                 data-active={isActive}
                 className={[
-                  "flex items-center px-3 text-[15px] font-bold italic uppercase tracking-wide transition-colors duration-200 sm:px-4",
+                  "flex items-center px-3 text-[15px] font-bold italic uppercase tracking-wide transition-colors duration-200 sm:px-4 relative",
                   isActive
                     ? "text-white"
                     : "text-white/95 hover:text-white/80 hover:text-white",
                 ].join(" ")}
               >
-                {item.label}
+                <span>{item.label}</span>
+                {item.label === "AMIGOS" && notifications && notifications.total > 0 && (
+                  <span className="ml-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[9px] font-bold text-white shadow-sm leading-none animate-pulse">
+                    {notifications.total}
+                  </span>
+                )}
               </Link>
             );
           })}

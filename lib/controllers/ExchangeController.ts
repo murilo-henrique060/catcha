@@ -6,10 +6,11 @@ export async function getCurrentExchange(profileId: string) {
   const supabase = await createSupabaseServerClient();
 
   const { data, error } = await supabase
-    .from('exchanges')
+    .from('trades')
     .select('*')
     .or(`sender_id.eq.${profileId},receiver_id.eq.${profileId}`)
-    .eq('status', 'pending')
+    .in('status', ['pending', 'countered'])
+    .limit(1)
     .maybeSingle();
 
   if (error) {

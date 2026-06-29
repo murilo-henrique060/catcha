@@ -1,8 +1,20 @@
+export const unstable_instant = { prefetch: "static" };
+
+import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { getUserProfile } from "@/lib/controllers/UserController";
 import { ProfileForm } from "@/ui/widgets/profile-form";
+import { ProfileSkeleton } from "@/ui/components/skeletons";
 
 export default async function ProfilePage() {
+  return (
+    <Suspense fallback={<ProfileSkeleton />}>
+      <ProfileContent />
+    </Suspense>
+  );
+}
+
+async function ProfileContent() {
   const profileData = await getUserProfile();
 
   if (!profileData || !profileData.profile) {

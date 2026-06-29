@@ -74,11 +74,28 @@ export const getUserProfile = cache(async (userId?: string) => {
   }
 
   // Fetch items, cards, and current exchange in parallel
-  const [items, cards, currentExchange] = await Promise.all([
+  const [
+    items, 
+    cards, 
+    currentExchange,
+    friendRequestsRes,
+    incomingPendingTradesRes,
+    outgoingCounteredTradesRes,
+    pendingGiftsRes
+  ] = await Promise.all([
     getUserItems(targetUserId),
     getUserCards(targetUserId),
     getCurrentExchange(targetUserId),
+    supabase.from('friendships').select('*', { count: 'exact', head: true }).eq('receiver_id', targetUserId).eq('status', 'pending'),
+    supabase.from('trades').select('*', { count: 'exact', head: true }).eq('receiver_id', targetUserId).eq('status', 'pending'),
+    supabase.from('trades').select('*', { count: 'exact', head: true }).eq('sender_id', targetUserId).eq('status', 'countered'),
+    supabase.from('gifts').select('*', { count: 'exact', head: true }).eq('receiver_id', targetUserId).eq('status', 'pending'),
   ]);
+
+  const pendingFriendRequests = friendRequestsRes.count || 0;
+  const activeTradesCount = (incomingPendingTradesRes.count || 0) + (outgoingCounteredTradesRes.count || 0);
+  const pendingGiftsCount = pendingGiftsRes.count || 0;
+  const totalNotifications = pendingFriendRequests + activeTradesCount + pendingGiftsCount;
 
   return {
     profile,
@@ -86,6 +103,12 @@ export const getUserProfile = cache(async (userId?: string) => {
     items,
     cards,
     currentExchange,
+    notifications: {
+      pendingFriendRequests,
+      activeTradesCount,
+      pendingGiftsCount,
+      total: totalNotifications,
+    }
   };
 });
 

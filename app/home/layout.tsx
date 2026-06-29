@@ -1,12 +1,25 @@
+import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { getUserProfile } from "@/lib/controllers/UserController";
 import { NavbarWidget } from "@/ui/widgets/navbar";
+import { NavbarSkeleton } from "@/ui/components/skeletons";
 
 export default async function HomeLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  return (
+    <div className="flex flex-col min-h-screen bg-[#F7F5F7]">
+      <Suspense fallback={<NavbarSkeleton />}>
+        <HomeNavbarWrapper />
+      </Suspense>
+      {children}
+    </div>
+  );
+}
+
+async function HomeNavbarWrapper() {
   const profileData = await getUserProfile();
 
   if (!profileData || !profileData.profile) {
@@ -17,9 +30,6 @@ export default async function HomeLayout({
   const username = profile.username ?? "Username";
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#F7F5F7]">
-      <NavbarWidget username={username} coins={profile.money} />
-      {children}
-    </div>
+    <NavbarWidget username={username} coins={profile.money} />
   );
 }

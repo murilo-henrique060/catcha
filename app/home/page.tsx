@@ -1,10 +1,22 @@
+export const unstable_instant = { prefetch: "static" };
+
+import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { getUserProfile } from "@/lib/controllers/UserController";
 import { DRAW_INTERVAL_MS, getCardsCountPerRarity } from "@/lib/controllers/CardController";
 import { StatsWidget } from "@/ui/widgets/stats";
 import { DrawArea } from "@/ui/widgets/draw-area";
+import { HomeSkeleton } from "@/ui/components/skeletons";
 
 export default async function HomePage() {
+  return (
+    <Suspense fallback={<HomeSkeleton />}>
+      <HomeContent />
+    </Suspense>
+  );
+}
+
+async function HomeContent() {
   const profileData = await getUserProfile();
 
   if (!profileData || !profileData.profile) {

@@ -1,8 +1,19 @@
+export const unstable_instant = {
+  prefetch: "runtime",
+  samples: [
+    {
+      params: { username: "test_username" }
+    }
+  ]
+};
+
+import { Suspense } from "react";
 import { redirect, notFound } from "next/navigation";
 import { getUserProfile } from "@/lib/controllers/UserController";
 import { getUserCards } from "@/lib/controllers/CardController";
 import { AlbumWidget } from "@/ui/widgets/album-widget";
 import { createSupabaseServerClient } from "@/lib/services/supabase/server";
+import { AlbumSkeleton } from "@/ui/components/skeletons";
 
 type PageProps = {
   params: Promise<{
@@ -11,6 +22,14 @@ type PageProps = {
 };
 
 export default async function PublicPlayerAlbumPage({ params }: PageProps) {
+  return (
+    <Suspense fallback={<AlbumSkeleton />}>
+      <PublicPlayerAlbumContent params={params} />
+    </Suspense>
+  );
+}
+
+async function PublicPlayerAlbumContent({ params }: { params: Promise<{ username: string }> }) {
   const resolvedParams = await params;
   const currentProfileData = await getUserProfile();
 

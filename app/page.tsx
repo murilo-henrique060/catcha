@@ -1,3 +1,5 @@
+export const unstable_instant = false;
+
 import { redirect } from "next/navigation";
 
 import Image from "next/image";

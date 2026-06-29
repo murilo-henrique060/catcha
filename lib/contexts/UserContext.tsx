@@ -46,6 +46,12 @@ export type UserProfileData = {
     created_at: string;
     updated_at: string;
   } | null;
+  notifications: {
+    pendingFriendRequests: number;
+    activeTradesCount: number;
+    pendingGiftsCount: number;
+    total: number;
+  };
 };
 
 type UserContextType = UserProfileData & {
@@ -61,6 +67,12 @@ const defaultProfileData: UserProfileData = {
   items: [],
   cards: [],
   currentExchange: null,
+  notifications: {
+    pendingFriendRequests: 0,
+    activeTradesCount: 0,
+    pendingGiftsCount: 0,
+    total: 0,
+  }
 };
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -82,6 +94,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
             items: data.items as unknown as UserProfileData['items'],
             cards: data.cards as unknown as UserProfileData['cards'],
             currentExchange: data.currentExchange as unknown as UserProfileData['currentExchange'],
+            notifications: data.notifications as unknown as UserProfileData['notifications'],
           });
         } else {
           setProfileData(defaultProfileData);
@@ -114,6 +127,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
           items: data.items as unknown as UserProfileData['items'],
           cards: data.cards as unknown as UserProfileData['cards'],
           currentExchange: data.currentExchange as unknown as UserProfileData['currentExchange'],
+          notifications: data.notifications as unknown as UserProfileData['notifications'],
         });
       } else {
         setProfileData(defaultProfileData);
