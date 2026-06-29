@@ -10,6 +10,21 @@ export const RARITY_CHANCES = {
   C: 0.50,
 };
 
+// Rarity values (Sell prices)
+export async function getRarityValue(rarity: string): Promise<number> {
+  switch (rarity) {
+    case 'S': return 1000;
+    case 'A': return 500;
+    case 'B': return 200;
+    default: return 100;
+  }
+}
+
+// Buy price
+export async function getBuyPrice(rarity: string): Promise<number> {
+  return getRarityValue(rarity); // S = 1000, A = 500, B = 200, C = 100
+}
+
 export async function getCardsCountPerRarity() {
   const supabase = await createSupabaseServerClient();
   const { data, error } = await supabase
@@ -31,10 +46,6 @@ export async function getCardsCountPerRarity() {
   return counts;
 }
 
-
-
-
-
 export async function getUserCards(profileId: string) {
   const supabase = await createSupabaseServerClient();
   
@@ -51,10 +62,13 @@ export async function getUserCards(profileId: string) {
     `)
     .eq('profile_id', profileId);
 
-  if (error) {
+  if (error || !data) {
     console.error("Error fetching user cards (cats):", error);
     return [];
   }
 
-  return data;
+  return data.map((row) => ({
+    quantity: row.quantity,
+    cat: Array.isArray(row.cat) ? row.cat[0] : (row.cat as unknown as { id: number; name: string; rarity: string; image_path: string }),
+  })).filter(row => row.cat !== null && row.cat !== undefined);
 }

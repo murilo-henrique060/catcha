@@ -2,8 +2,8 @@
 
 import { createSupabaseServerClient } from "@/lib/services/supabase/server";
 import { SupabaseClient } from "@supabase/supabase-js";
-import { DRAW_INTERVAL_MS } from "./CardController";
-
+import { DRAW_INTERVAL_MS, getBuyPrice, getRarityValue } from "./CardController";
+import { revalidatePath } from "next/cache";
 
 // Helper function to draw a random card and add it to the user's collection
 async function executeCardDraw(supabase: SupabaseClient, userId: string) {
@@ -233,4 +233,160 @@ export async function accelerateDraw() {
   } catch (err: unknown) {
     return { error: (err as Error).message || "Erro desconhecido ao acelerar sorteio" };
   }
+}
+
+export async function buyCat(catId: number) {
+  const supabase = await createSupabaseServerClient();
+
+  // 1. Get current user
+  const { data: { user }, error: authError } = await supabase.auth.getUser();
+  if (authError || !user) {
+    return { error: "Usuário não autenticado" };
+  }
+
+  // 2. Get cat details
+  const { data: cat, error: catError } = await supabase
+    .from('cats')
+    .select('*')
+    .eq('id', catId)
+    .single();
+
+  if (catError || !cat) {
+    return { error: "Carta não encontrada" };
+  }
+
+  const price = await getBuyPrice(cat.rarity);
+
+  // 3. Get user profiles balance
+  const { data: profile, error: profileError } = await supabase
+    .from('profiles')
+    .select('money')
+    .eq('id', user.id)
+    .single();
+
+  if (profileError || !profile) {
+    return { error: "Perfil do usuário não encontrado" };
+  }
+
+  if (profile.money < price) {
+    return { error: "Moedas insuficientes" };
+  }
+
+  // 4. Deduct money from profile
+  const { error: updateMoneyError } = await supabase
+    .from('profiles')
+    .update({ money: profile.money - price })
+    .eq('id', user.id);
+
+  if (updateMoneyError) {
+    return { error: "Erro ao processar pagamento" };
+  }
+
+  // 5. Add cat to user inventory (profiles_cats)
+  const { data: existingRecord } = await supabase
+    .from('profiles_cats')
+    .select('*')
+    .eq('profile_id', user.id)
+    .eq('cat_id', catId)
+    .maybeSingle();
+
+  if (existingRecord) {
+    await supabase
+      .from('profiles_cats')
+      .update({ quantity: existingRecord.quantity + 1 })
+      .eq('profile_id', user.id)
+      .eq('cat_id', catId);
+  } else {
+    await supabase
+      .from('profiles_cats')
+      .insert({
+        profile_id: user.id,
+        cat_id: catId,
+        quantity: 1
+      });
+  }
+
+  revalidatePath("/home/loja");
+  revalidatePath("/home/album");
+  revalidatePath("/home");
+  return { success: true, cat };
+}
+
+export async function sellCat(catId: number) {
+  const supabase = await createSupabaseServerClient();
+
+  // 1. Get current user
+  const { data: { user }, error: authError } = await supabase.auth.getUser();
+  if (authError || !user) {
+    return { error: "Usuário não autenticado" };
+  }
+
+  // 2. Get user's card record
+  const { data: record, error: recordError } = await supabase
+    .from('profiles_cats')
+    .select('*, cat:cats(*)')
+    .eq('profile_id', user.id)
+    .eq('cat_id', catId)
+    .maybeSingle();
+
+  if (recordError || !record || record.quantity <= 0) {
+    return { error: "Você não possui esta carta para vender" };
+  }
+
+  const price = await getRarityValue(record.cat.rarity);
+
+  // 3. Get user profiles balance
+  const { data: profile, error: profileError } = await supabase
+    .from('profiles')
+    .select('money')
+    .eq('id', user.id)
+    .single();
+
+  if (profileError || !profile) {
+    return { error: "Perfil do usuário não encontrado" };
+  }
+
+  // 4. Update money in profile
+  const { error: updateMoneyError } = await supabase
+    .from('profiles')
+    .update({ money: profile.money + price })
+    .eq('id', user.id);
+
+  if (updateMoneyError) {
+    return { error: "Erro ao processar venda" };
+  }
+
+  // 5. Update profiles_cats quantity
+  if (record.quantity > 1) {
+    await supabase
+      .from('profiles_cats')
+      .update({ quantity: record.quantity - 1 })
+      .eq('profile_id', user.id)
+      .eq('cat_id', catId);
+  } else {
+    await supabase
+      .from('profiles_cats')
+      .delete()
+      .eq('profile_id', user.id)
+      .eq('cat_id', catId);
+  }
+
+  revalidatePath("/home/loja");
+  revalidatePath("/home/album");
+  revalidatePath("/home");
+  return { success: true, price };
+}
+
+export async function getAllCats() {
+  const supabase = await createSupabaseServerClient();
+  const { data, error } = await supabase
+    .from('cats')
+    .select('*')
+    .order('name', { ascending: true });
+
+  if (error) {
+    console.error("Error fetching all cats:", error);
+    return [];
+  }
+  return data;
 }
