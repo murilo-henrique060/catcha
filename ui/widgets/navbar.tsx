@@ -14,7 +14,7 @@ import { useUser } from "@/lib/contexts/UserContext";
 type NavbarWidgetProps = {
   username?: string;
   coins?: number;
-  energy?: number;
+  className?: string;
 };
 
 const navigationItems = [
@@ -25,7 +25,7 @@ const navigationItems = [
   { label: "AMIGOS", href: "/home/amigos" },
 ];
 
-export function NavbarWidget({ username = "Username", coins = 0 }: NavbarWidgetProps) {
+export function NavbarWidget({ username = "Username", coins = 0, className = "" }: NavbarWidgetProps) {
   const { profile, isLoading, items } = useUser();
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -96,6 +96,32 @@ export function NavbarWidget({ username = "Username", coins = 0 }: NavbarWidgetP
   }, [displayCoins]);
 
 
+  const tabsContainerRef = useRef<HTMLDivElement | null>(null);
+  const [indicatorStyle, setIndicatorStyle] = useState({ left: 0, width: 0 });
+
+  useEffect(() => {
+    const updateIndicator = () => {
+      const activeTabEl = tabsContainerRef.current?.querySelector('[data-active="true"]') as HTMLElement | null;
+      if (activeTabEl) {
+        setIndicatorStyle({
+          left: activeTabEl.offsetLeft,
+          width: activeTabEl.offsetWidth,
+        });
+      } else {
+        setIndicatorStyle({
+          left: 0,
+          width: 0,
+        });
+      }
+    };
+
+    // Run layout update
+    updateIndicator();
+
+    window.addEventListener("resize", updateIndicator);
+    return () => window.removeEventListener("resize", updateIndicator);
+  }, [pathname]);
+
   useEffect(() => {
     const handleOutsideClick = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -119,9 +145,9 @@ export function NavbarWidget({ username = "Username", coins = 0 }: NavbarWidgetP
   }, []);
 
   return (
-    <nav className="w-full border-b-2 border-[#FF99D7] bg-[linear-gradient(90deg,#C40873_2.02%,#B01070_78.46%,#8C1D6B_99.58%)] shadow-[0_4px_6px_0_rgba(0,0,0,0.25)]">
+    <nav className={`w-full border-b-2 border-[#FF99D7] bg-[linear-gradient(90deg,#C40873_2.02%,#B01070_78.46%,#8C1D6B_99.58%)] shadow-[0_4px_6px_0_rgba(0,0,0,0.25)] ${className}`}>
       <div className="mx-auto flex h-14 w-full max-w-[1366px] items-stretch justify-between pe-2 sm:pe-4">
-        <div className="flex h-full items-stretch gap-1 overflow-x-auto">
+        <div ref={tabsContainerRef} className="relative flex h-full items-stretch gap-1 overflow-x-auto">
           {navigationItems.map((item) => {
             const isActive = pathname === item.href;
 
@@ -129,10 +155,11 @@ export function NavbarWidget({ username = "Username", coins = 0 }: NavbarWidgetP
               <Link
                 key={item.href}
                 href={item.href}
+                data-active={isActive}
                 className={[
-                  "relative flex items-center px-3 text-[15px] font-bold italic uppercase tracking-wide transition-colors duration-200 sm:px-4",
+                  "flex items-center px-3 text-[15px] font-bold italic uppercase tracking-wide transition-colors duration-200 sm:px-4",
                   isActive
-                    ? "text-white border-b-2 border-[#FF99D7]"
+                    ? "text-white"
                     : "text-white/95 hover:text-white/80 hover:text-white",
                 ].join(" ")}
               >
@@ -140,6 +167,18 @@ export function NavbarWidget({ username = "Username", coins = 0 }: NavbarWidgetP
               </Link>
             );
           })}
+
+          {/* Animated Indicator Bar */}
+          <div
+            className={[
+              "absolute bottom-0 h-[3px] bg-[#FF99D7] transition-all duration-300 ease-out shadow-[0_-1px_6px_rgba(255,153,215,0.4)]",
+              indicatorStyle.width === 0 ? "opacity-0 scale-x-0" : "opacity-100 scale-x-100"
+            ].join(" ")}
+            style={{
+              left: `${indicatorStyle.left}px`,
+              width: `${indicatorStyle.width}px`
+            }}
+          />
         </div>
 
         <div className="relative flex items-center gap-2 sm:gap-3" ref={dropdownRef}>
