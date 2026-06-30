@@ -7,6 +7,7 @@ Bem-vindo ao **Catcha**, um jogo de coleção e troca de cartas baseado na web! 
 ## Funcionalidades
 
 - 🐾 **Colete Cartas**: Sorteie cartas geradas aleatoriamente com várias raridades (Comum, Incomum, Rara, Épica, Lendária, Mítica).
+- 🎨 **Crie Gatos**: Desenhe, nomeie e submeta suas próprias cartas de gatos para que possam fazer parte da coleção oficial do jogo.
 - 🤝 **Trocas e Presentes**: Proponha, faça contrapropostas e aceite trocas de cartas com seus amigos, ou envie cartas repetidas como presentes.
 - 🛒 **Economia no Jogo**: Venda cartas repetidas para ganhar moedas e compre itens consumíveis na loja para acelerar o tempo de espera dos seus sorteios.
 - 🌐 **Intercâmbios Globais**: Junte suas cartas em eventos de intercâmbio global para tentar conseguir cartas de raridades maiores!
@@ -16,7 +17,7 @@ Bem-vindo ao **Catcha**, um jogo de coleção e troca de cartas baseado na web! 
 - **Frontend**: [Next.js](https://nextjs.org/) (App Router), React, Tailwind CSS
 - **Backend & Banco de Dados**: [Supabase](https://supabase.com/) (PostgreSQL)
 - **Autenticação**: Supabase Auth (Verificação por E-mail)
-- **Armazenamento (Storage)**: Supabase Storage (Buckets Públicos para as Imagens das Cartas)
+- **Armazenamento (Storage)**: Supabase Storage (Buckets Públicos para as Imagens das Cartas Oficiais e Uploads dos Usuários)
 
 ## Documentação
 

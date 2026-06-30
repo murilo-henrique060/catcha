@@ -13,6 +13,7 @@ Bem-vindo à documentação do **Catcha**, um jogo de coleção e troca de carta
 ## Funcionalidades Principais
 
 - **Coleção de Cartas**: Sorteie cartas geradas aleatoriamente com diferentes raridades. Acompanhe sua coleção no seu álbum.
+- **Criação de Cartas**: Desenhe e submeta suas próprias cartas de gatos! Acompanhe a aprovação e faça parte da coleção global do jogo.
 - **Sistema de Trocas**: Proponha, faça contrapropostas e aceite trocas com seus amigos para completar sua coleção.
 - **Presentes**: Envie cartas repetidas para seus amigos como presentes.
 - **Loja e Economia**: Venda cartas repetidas por moedas e compre itens na loja para acelerar seus sorteios.

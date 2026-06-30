@@ -37,6 +37,8 @@ package "Backend (/lib/controllers)" {
         + buyCat(catId: number)
         + sellCat(catId: number)
         + getAllCats()
+        + submitNewCat(name: string, rarity: string, base64Image: string)
+        + getCreatedCats()
     }
 
     class FriendController {
@@ -100,7 +102,7 @@ Lida com todos os fluxos de autenticação do usuário, incluindo login, registr
 Busca e atualiza os dados do perfil do usuário, incluindo a contagem global de notificações (trocas pendentes, presentes não lidos, pedidos de amizade) usados na barra de navegação.
 
 ### 3. CardActions
-Gerencia o loop central do jogo: sorteio de cartas sob um tempo de espera (cooldown), utilização de itens para acelerar esse tempo e compra/venda de cartas repetidas por moeda no jogo.
+Gerencia o loop central do jogo: sorteio de cartas sob um tempo de espera (cooldown), utilização de itens para acelerar esse tempo e compra/venda de cartas repetidas por moeda no jogo. Também lida com a submissão de novos gatos pelos usuários.
 
 ### 4. TradeController & GiftController
 Aplica a regra de limite de 1 troca ativa globalmente. Lida com a oferta de cartas, negociação de contrapropostas e execução segura da dedução atômica das cartas. A lógica de presentes apresenta um tempo de espera automático para prevenir spam.
