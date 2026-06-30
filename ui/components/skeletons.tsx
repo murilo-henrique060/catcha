@@ -119,6 +119,10 @@ export function ShopSkeleton() {
                   <div className="w-12 h-14 bg-gray-100 rounded-lg" />
                   <div className="w-16 h-3 bg-gray-100 rounded" />
                 </div>
+                <div className="h-32 rounded-2xl bg-white border border-gray-100 shadow-sm flex flex-col items-center justify-center gap-2.5 col-span-2">
+                  <div className="w-12 h-12 bg-gray-100 rounded-full" />
+                  <div className="w-20 h-3 bg-gray-100 rounded" />
+                </div>
               </div>
             </div>
             <div className="flex flex-col gap-2.5">

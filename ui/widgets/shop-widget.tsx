@@ -8,8 +8,11 @@ import { TbCardsFilled } from "react-icons/tb";
 import { CardWidget } from "./card";
 import { CardFace, CardRarity } from "./card-types";
 import { useUser } from "@/lib/contexts/UserContext";
-import { buyCat, sellCat } from "@/lib/controllers/CardActions";
+import { getCatImageUrl } from "@/lib/utils";
+import { buyCat, sellCat, submitNewCat } from "@/lib/controllers/CardActions";
 import { buyAccelerationItem } from "@/lib/controllers/ShopController";
+import { ImageCropper } from "../components/image-cropper";
+import { createSupabaseBrowserClient } from "@/lib/services/supabase/client";
 
 type ShopWidgetProps = {
   allCats: {
@@ -17,6 +20,7 @@ type ShopWidgetProps = {
     name: string;
     rarity: string;
     image_path: string;
+    profiles?: { username: string } | { username: string }[] | null;
   }[];
 };
 
@@ -37,8 +41,8 @@ export function ShopWidget({ allCats }: ShopWidgetProps) {
   const [currentView, setCurrentView] = useState<"menu" | "buy_cats" | "sell_cats">("menu");
   
   // Selected option in the main menu
-  // "buy_cats" | "sell_cats" | "buy_items"
-  const [selectedMenuOption, setSelectedMenuOption] = useState<"buy_cats" | "sell_cats" | "buy_items">("buy_cats");
+  // "buy_cats" | "sell_cats" | "buy_items" | "submit_cat"
+  const [selectedMenuOption, setSelectedMenuOption] = useState<"buy_cats" | "sell_cats" | "buy_items" | "submit_cat">("buy_cats");
 
   // Grid selection
   const [selectedCatId, setSelectedCatId] = useState<number | null>(null);
@@ -57,6 +61,14 @@ export function ShopWidget({ allCats }: ShopWidgetProps) {
   const [successMessage, setSuccessMessage] = useState("");
   const [successCat, setSuccessCat] = useState<{ name: string; rarity: string; image_path: string } | null>(null);
   const [buyItemQuantity, setBuyItemQuantity] = useState(0);
+
+  const [showSubmitModal, setShowSubmitModal] = useState(false);
+
+  // Submit Cat Form States
+  const [submitName, setSubmitName] = useState("");
+  const [submitRarity, setSubmitRarity] = useState<string>("C");
+  const [submitImageFile, setSubmitImageFile] = useState<File | null>(null);
+  const [submitCroppedBlob, setSubmitCroppedBlob] = useState<Blob | null>(null);
 
   const maxQuantity = profile ? Math.floor(profile.money / 100) : 0;
 
@@ -114,6 +126,8 @@ export function ShopWidget({ allCats }: ShopWidgetProps) {
     } else if (selectedMenuOption === "buy_items") {
       // Direct confirm modal for skip items
       setShowConfirmModal(true);
+    } else if (selectedMenuOption === "submit_cat") {
+      setShowSubmitModal(true);
     }
   };
 
@@ -203,6 +217,39 @@ export function ShopWidget({ allCats }: ShopWidgetProps) {
           setBuyItemQuantity(1); // Reset
           await refreshProfile();
         }
+      } else if (currentView === "menu" && selectedMenuOption === "submit_cat" && submitName && submitCroppedBlob) {
+        // Convert Blob to Base64 to send to server action
+        const reader = new FileReader();
+        reader.readAsDataURL(submitCroppedBlob);
+        
+        reader.onloadend = async () => {
+          const base64data = reader.result as string;
+          
+          const res = await submitNewCat(submitName, submitRarity, base64data);
+          if (res.error) {
+            setErrorMessage(res.error);
+            setIsProcessing(false);
+          } else {
+            setSuccessMessage(`Carta submetida com sucesso! Ela aparecerá na loja quando for aprovada.`);
+            setSuccessCat(res.cat || null);
+            setShowConfirmModal(false);
+            setShowSuccessModal(true);
+            // Reset form
+            setSubmitName("");
+            setSubmitImageFile(null);
+            setSubmitCroppedBlob(null);
+            setIsProcessing(false);
+            await refreshProfile();
+          }
+        };
+        
+        reader.onerror = () => {
+          setErrorMessage("Erro ao processar a imagem da carta");
+          setIsProcessing(false);
+        };
+        
+        // Return early to prevent setting isProcessing(false) synchronously in finally block
+        return;
       }
     } catch (e) {
       console.error(e);
@@ -316,7 +363,7 @@ export function ShopWidget({ allCats }: ShopWidgetProps) {
       ].join(" ")}>
         
         {/* Left Column: Menu list OR Cat grids */}
-        <div className={["w-full lg:absolute lg:left-0 lg:top-0 lg:bottom-0 h-auto lg:h-full overflow-y-auto custom-scrollbar", currentView === "menu" ? "lg:w-[calc(65%-12px)] p-1 pr-2 lg:pr-4" : "lg:w-[calc(65%-20px)] p-4 pr-2 lg:pr-4"].join(" ")}>
+        <div className={["w-full lg:absolute lg:left-0 lg:top-0 lg:bottom-0 h-auto lg:h-full overflow-y-auto custom-scrollbar", currentView === "menu" ? "lg:w-[calc(65%-12px)] p-2.5 pr-3 lg:pr-5" : "lg:w-[calc(65%-20px)] p-4 pr-2 lg:pr-4"].join(" ")}>
           
           {currentView === "menu" ? (
             /* ================= MENU VIEW ================= */
@@ -360,6 +407,22 @@ export function ShopWidget({ allCats }: ShopWidgetProps) {
                       <FaArrowUp className="absolute -bottom-0.5 -right-0.5 text-green-500 text-[13px]" />
                     </div>
                     <span className="text-[13px] font-bold uppercase text-gray-700 tracking-wider">Vender</span>
+                  </div>
+
+                  {/* Option Submit Cat */}
+                  <div
+                    onClick={() => setSelectedMenuOption("submit_cat")}
+                    className={[
+                      "relative h-32 rounded-2xl bg-white border cursor-pointer flex flex-col items-center justify-center gap-2.5 transition-all hover:scale-102 hover:shadow-md col-span-2",
+                      selectedMenuOption === "submit_cat" 
+                        ? "border-2 border-[#B01070] shadow-md scale-102" 
+                        : "border-gray-200 shadow-sm"
+                    ].join(" ")}
+                  >
+                    <div className="w-12 h-12 bg-[#FFF3F8] border border-[#B01070]/20 rounded-full flex items-center justify-center text-[#B01070] shadow-sm">
+                      <FaArrowUp className="text-[20px]" />
+                    </div>
+                    <span className="text-[13px] font-bold uppercase text-gray-700 tracking-wider">Criar Gato</span>
                   </div>
                 </div>
               </div>
@@ -419,7 +482,8 @@ export function ShopWidget({ allCats }: ShopWidgetProps) {
                         title={card.name}
                         rarity={mapRarity(card.rarity)}
                         start_face={CardFace.FRONT}
-                        image_url={card.image_path}
+                        image_url={getCatImageUrl(card.image_path)}
+                        watermark={card.profiles ? (Array.isArray(card.profiles) ? card.profiles[0]?.username : card.profiles.username) : undefined}
                       />
 
                       {/* Quantity Badge overlay on bottom center */}
@@ -527,13 +591,34 @@ export function ShopWidget({ allCats }: ShopWidgetProps) {
                     </div>
                   </>
                 )}
+
+                {selectedMenuOption === "submit_cat" && (
+                  <>
+                    <div className="w-40 h-40 bg-[#FFF3F8] border border-[#B01070]/20 rounded-[28px] flex items-center justify-center text-[#B01070] relative shadow-[0_10px_25px_rgba(176,16,112,0.1)]">
+                      <FaArrowUp className="text-[64px]" />
+                    </div>
+                    <h3 className="text-[20px] font-extrabold italic uppercase tracking-wide text-gray-800">
+                      Criar Gato
+                    </h3>
+                    <p className="text-gray-500 text-center text-[13px] px-6">
+                      Envie a foto do seu gato, ajuste o enquadramento e escolha um nome. Ao ser aprovada, você receberá a carta!
+                    </p>
+                    <div className="flex items-center gap-6 mt-1">
+                      <div className="flex items-center gap-1.5" title="Preço unitário">
+                        <FaCoins className="text-[18px] text-[#FFD54A] drop-shadow-sm" />
+                        <span className="text-[16px] font-bold text-gray-600">1.000</span>
+                      </div>
+                    </div>
+                  </>
+                )}
+
                 {/* Actions select button */}
                 <button
                   onClick={handleMenuSelect}
                   disabled={selectedMenuOption === "buy_items" && buyItemQuantity === 0}
-                  className="w-full py-3.5 rounded-2xl bg-[#B01070] hover:bg-[#FF99D7] text-white font-extrabold italic uppercase tracking-wider text-[14px] shadow-md transition-colors cursor-pointer select-none disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full py-3.5 rounded-2xl bg-[#B01070] hover:bg-[#FF99D7] text-white font-extrabold italic uppercase tracking-wider text-[14px] shadow-md transition-colors cursor-pointer select-none disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0"
                 >
-                  SELECIONAR
+                  {selectedMenuOption === "submit_cat" ? "ABRIR CRIADOR" : "SELECIONAR"}
                 </button>
               </div>
             </div>
@@ -549,7 +634,8 @@ export function ShopWidget({ allCats }: ShopWidgetProps) {
                     title={selectedCat.name}
                     rarity={mapRarity(selectedCat.rarity)}
                     start_face={CardFace.FRONT}
-                    image_url={selectedCat.image_path}
+                    image_url={getCatImageUrl(selectedCat.image_path)}
+                    watermark={selectedCat.profiles ? (Array.isArray(selectedCat.profiles) ? selectedCat.profiles[0]?.username : selectedCat.profiles.username) : undefined}
                   />
                 </div>
 
@@ -616,6 +702,7 @@ export function ShopWidget({ allCats }: ShopWidgetProps) {
             <h2 className="text-[18px] font-extrabold italic uppercase tracking-wider text-[#B01070] border-b border-gray-100 w-full pb-3 mb-4">
               {currentView === "buy_cats" && "COMPRAR GATO"}
               {currentView === "sell_cats" && "VENDER GATO"}
+              {currentView === "menu" && selectedMenuOption === "submit_cat" && "CRIAR NOVA CARTA"}
               {currentView === "menu" && selectedMenuOption === "buy_items" && "COMPRAR ITEM"}
             </h2>
 
@@ -625,6 +712,15 @@ export function ShopWidget({ allCats }: ShopWidgetProps) {
                 <div className="w-32 h-32 bg-white border border-[#B01070]/20 rounded-2xl flex items-center justify-center text-white shadow-lg bg-gradient-to-tr from-[#9F267B] to-[#E10B83]">
                   <HiChevronDoubleRight className="text-[52px]" />
                 </div>
+              ) : currentView === "menu" && selectedMenuOption === "submit_cat" && submitCroppedBlob ? (
+                <CardWidget
+                  className="h-52 w-[148px]"
+                  title={submitName || "Nova Carta"}
+                  rarity={mapRarity(submitRarity)}
+                  start_face={CardFace.FRONT}
+                  image_url={URL.createObjectURL(submitCroppedBlob)}
+                  watermark={profile?.username}
+                />
               ) : (
                 selectedCat && (
                   <CardWidget
@@ -632,7 +728,8 @@ export function ShopWidget({ allCats }: ShopWidgetProps) {
                     title={selectedCat.name}
                     rarity={mapRarity(selectedCat.rarity)}
                     start_face={CardFace.FRONT}
-                    image_url={selectedCat.image_path}
+                    image_url={getCatImageUrl(selectedCat.image_path)}
+                    watermark={selectedCat.profiles ? (Array.isArray(selectedCat.profiles) ? selectedCat.profiles[0]?.username : selectedCat.profiles.username) : undefined}
                   />
                 )
               )}
@@ -648,6 +745,9 @@ export function ShopWidget({ allCats }: ShopWidgetProps) {
               )}
               {currentView === "menu" && selectedMenuOption === "buy_items" && (
                 <>Deseja comprar {buyItemQuantity} <span className="text-[#B01070] italic">{buyItemQuantity === 1 ? "Aceleração de Sorteio" : "Acelerações de Sorteio"}</span> por <span className="inline-flex items-center gap-1 font-extrabold text-amber-500 whitespace-nowrap"><FaCoins />{buyItemQuantity * 100}?</span></>
+              )}
+              {currentView === "menu" && selectedMenuOption === "submit_cat" && (
+                <>Deseja criar a carta <span className="text-[#B01070] italic">{submitName}</span> por <span className="inline-flex items-center gap-1 font-extrabold text-amber-500 whitespace-nowrap"><FaCoins />1.000?</span></>
               )}
             </p>
 
@@ -684,6 +784,100 @@ export function ShopWidget({ allCats }: ShopWidgetProps) {
         </div>
       )}
 
+      {/* ================= SUBMIT MODAL ================= */}
+      {showSubmitModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 overflow-y-auto">
+          <div className="w-full max-w-lg rounded-3xl bg-white p-6 shadow-2xl border border-gray-100 flex flex-col items-center animate-in fade-in zoom-in-95 duration-150 my-auto">
+            <h2 className="text-[20px] font-extrabold italic uppercase tracking-wide text-[#B01070] text-center mb-2">
+              Criador de Gatos
+            </h2>
+            <p className="text-gray-500 text-center text-[13px] px-2 mb-6 leading-relaxed">
+              Siga os passos para criar sua própria carta. Não se preocupe, os 1.000 moedas só serão cobrados na próxima etapa.
+            </p>
+
+            <div className="flex flex-col gap-4 w-full">
+              <div className="flex flex-col gap-1.5">
+                <label className="text-[11px] font-extrabold uppercase tracking-wider text-gray-500">Nome do Gato</label>
+                <input
+                  type="text"
+                  maxLength={30}
+                  value={submitName}
+                  onChange={(e) => setSubmitName(e.target.value)}
+                  className="w-full h-12 px-4 rounded-xl bg-gray-50 border border-gray-200 focus:border-[#B01070]/50 outline-none text-[15px] font-bold text-gray-700 transition-colors"
+                  placeholder="Ex: Garfield"
+                />
+              </div>
+
+              <div className="flex flex-col gap-1.5">
+                <label className="text-[11px] font-extrabold uppercase tracking-wider text-gray-500">Raridade Desejada</label>
+                <select
+                  value={submitRarity}
+                  onChange={(e) => setSubmitRarity(e.target.value)}
+                  className="w-full h-12 px-4 rounded-xl bg-gray-50 border border-gray-200 focus:border-[#B01070]/50 outline-none text-[15px] font-bold text-gray-700 transition-colors"
+                >
+                  <option value="C">Comum (C)</option>
+                  <option value="B">Incomum (B)</option>
+                  <option value="A">Raro (A)</option>
+                  <option value="S">Lendário (S)</option>
+                </select>
+              </div>
+
+              <div className="flex flex-col gap-1.5">
+                <label className="text-[11px] font-extrabold uppercase tracking-wider text-gray-500">Imagem da Carta</label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => {
+                    if (e.target.files && e.target.files[0]) {
+                      setSubmitImageFile(e.target.files[0]);
+                    }
+                  }}
+                  className="w-full text-[14px] text-gray-500 file:mr-4 file:py-2.5 file:px-5 file:rounded-full file:border-0 file:text-[13px] file:font-bold file:bg-[#FFF3F8] file:text-[#B01070] hover:file:bg-[#FCE8F4] cursor-pointer"
+                />
+              </div>
+
+              {submitImageFile && (
+                <div className="mt-4 mb-2 flex justify-center w-full">
+                  <ImageCropper 
+                    imageFile={submitImageFile} 
+                    onCropChange={setSubmitCroppedBlob} 
+                    cardTitle={submitName || "Nova Carta"}
+                    cardRarity={submitRarity}
+                    watermark={profile?.username}
+                  />
+                </div>
+              )}
+            </div>
+
+            {/* Action buttons */}
+            <div className="flex gap-4 w-full mt-8">
+              <button
+                type="button"
+                disabled={!submitName || !submitImageFile || !submitCroppedBlob}
+                onClick={() => {
+                  setShowSubmitModal(false);
+                  setShowConfirmModal(true);
+                }}
+                className="flex-grow py-3.5 rounded-xl bg-[#B01070] hover:bg-[#FF99D7] text-white font-extrabold italic uppercase tracking-wider text-[14px] shadow-md transition-colors cursor-pointer disabled:opacity-50"
+              >
+                AVANÇAR
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowSubmitModal(false);
+                  // Optional: reset fields if they cancel entirely?
+                  // Let's keep them so they don't lose progress if they accidentally click cancel.
+                }}
+                className="flex-grow py-3.5 rounded-xl bg-gray-500 hover:bg-gray-400 text-white font-extrabold italic uppercase tracking-wider text-[14px] shadow-md transition-colors cursor-pointer"
+              >
+                CANCELAR
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* ================= SUCCESS MODAL ================= */}
       {showSuccessModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
@@ -692,6 +886,7 @@ export function ShopWidget({ allCats }: ShopWidgetProps) {
               {currentView === "buy_cats" && "COMPRA REALIZADA COM SUCESSO!"}
               {currentView === "sell_cats" && "VENDA REALIZADA COM SUCESSO!"}
               {currentView === "menu" && selectedMenuOption === "buy_items" && "COMPRA REALIZADA COM SUCESSO!"}
+              {currentView === "menu" && selectedMenuOption === "submit_cat" && "CARTA SUBMETIDA COM SUCESSO!"}
             </h2>
 
             {/* Modal preview image */}
@@ -707,7 +902,8 @@ export function ShopWidget({ allCats }: ShopWidgetProps) {
                     title={successCat.name}
                     rarity={mapRarity(successCat.rarity)}
                     start_face={CardFace.FRONT}
-                    image_url={successCat.image_path}
+                    image_url={getCatImageUrl(successCat.image_path)}
+                    watermark={profile?.username}
                   />
                 )
               )}

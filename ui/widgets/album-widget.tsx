@@ -7,6 +7,7 @@ import { FaSearch, FaCoins, FaSortAmountDown, FaSortAmountUp, FaArrowLeft } from
 import { TbCardsFilled } from "react-icons/tb";
 import { CardWidget } from "./card";
 import { CardFace, CardRarity } from "./card-types";
+import { getCatImageUrl } from "@/lib/utils";
 
 type AlbumWidgetProps = {
   username: string;
@@ -17,6 +18,7 @@ type AlbumWidgetProps = {
       name: string;
       rarity: string;
       image_path: string;
+      profiles?: { username: string } | null;
     };
   }[];
   backUrl?: string;
@@ -250,7 +252,8 @@ export function AlbumWidget({ username, initialCards, backUrl }: AlbumWidgetProp
                       title={card.cat.name}
                       rarity={mapRarity(card.cat.rarity)}
                       start_face={CardFace.FRONT}
-                      image_url={card.cat.image_path}
+                      image_url={getCatImageUrl(card.cat.image_path)}
+                      watermark={card.cat.profiles?.username}
                     />
 
                     {/* Quantity Badge overlay on bottom center */}
@@ -276,7 +279,8 @@ export function AlbumWidget({ username, initialCards, backUrl }: AlbumWidgetProp
                   title={selectedCard.cat.name}
                   rarity={mapRarity(selectedCard.cat.rarity)}
                   start_face={CardFace.FRONT}
-                  image_url={selectedCard.cat.image_path}
+                  image_url={getCatImageUrl(selectedCard.cat.image_path)}
+                  watermark={selectedCard.cat.profiles?.username}
                 />
               </div>
 

@@ -35,6 +35,7 @@ export type UserProfileData = {
       name: string;
       rarity: string;
       image_path: string;
+      profiles?: { username: string } | null;
     };
   }[];
   currentExchange: {

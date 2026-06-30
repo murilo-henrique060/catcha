@@ -7,6 +7,7 @@ import { HiChevronDoubleRight } from "react-icons/hi";
 import { CardWidget } from "./card";
 import { CardFace, CardRarity } from "./card-types";
 import { useUser } from "@/lib/contexts/UserContext";
+import { getCatImageUrl } from "@/lib/utils";
 import { drawCard, accelerateDraw } from "@/lib/controllers/CardActions";
 
 type DrawAreaProps = {
@@ -36,7 +37,13 @@ export function DrawArea({ drawIntervalMs, serverTime }: DrawAreaProps) {
       setTimeOffset(serverNow - clientNow);
     }
   }, [serverTime]);
-  const [cardWidgetProps, setCardWidgetProps] = useState({
+  const [cardWidgetProps, setCardWidgetProps] = useState<{
+    title: string;
+    rarity: CardRarity;
+    image_url: string;
+    face: CardFace;
+    watermark?: string;
+  }>({
     title: "Sorteio de Carta",
     rarity: CardRarity.C,
     image_url: "/cats/cat001.webp",
@@ -121,13 +128,14 @@ export function DrawArea({ drawIntervalMs, serverTime }: DrawAreaProps) {
 
       // Preload image before starting the card flip
       const img = new window.Image();
-      img.src = newCard.image_path;
+      img.src = getCatImageUrl(newCard.image_path);
       img.onload = () => {
         setCardWidgetProps({
           title: newCard.name,
           rarity: mapRarity(newCard.rarity),
-          image_url: newCard.image_path,
+          image_url: getCatImageUrl(newCard.image_path),
           face: CardFace.BACK,
+          watermark: (newCard as any).profiles?.username,
         });
 
         setTimeout(() => {
@@ -218,13 +226,14 @@ export function DrawArea({ drawIntervalMs, serverTime }: DrawAreaProps) {
 
       // Preload image before starting the card flip
       const img = new window.Image();
-      img.src = newCard.image_path;
+      img.src = getCatImageUrl(newCard.image_path);
       img.onload = () => {
         setCardWidgetProps({
           title: newCard.name,
           rarity: mapRarity(newCard.rarity),
-          image_url: newCard.image_path,
+          image_url: getCatImageUrl(newCard.image_path),
           face: CardFace.BACK,
+          watermark: (newCard as any).profiles?.username,
         });
 
         setTimeout(() => {
@@ -299,6 +308,7 @@ export function DrawArea({ drawIntervalMs, serverTime }: DrawAreaProps) {
         rarity: CardRarity.C,
         image_url: "/cats/cat001.webp",
         face: CardFace.BACK,
+        watermark: undefined,
       });
       setDrawnCat(null);
 
@@ -321,6 +331,7 @@ export function DrawArea({ drawIntervalMs, serverTime }: DrawAreaProps) {
         rarity={cardWidgetProps.rarity}
         start_face={cardWidgetProps.face}
         image_url={cardWidgetProps.image_url}
+        watermark={cardWidgetProps.watermark}
       />
 
       {/* Timer Cooldown Pill */}
@@ -441,7 +452,8 @@ export function DrawArea({ drawIntervalMs, serverTime }: DrawAreaProps) {
               title={drawnCat.name}
               rarity={mapRarity(drawnCat.rarity)}
               start_face={CardFace.FRONT}
-              image_url={drawnCat.image_path}
+              image_url={getCatImageUrl(drawnCat.image_path)}
+              watermark={(drawnCat as any).profiles?.username}
             />
 
             {/* Modal Body Text */}

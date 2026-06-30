@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { FaCoins, FaCog } from "react-icons/fa";
+import { FaCoins, FaCog, FaPaintBrush } from "react-icons/fa";
 import { HiChevronDoubleRight, HiDotsVertical } from "react-icons/hi";
 import { TbCardsFilled } from "react-icons/tb";
 import { IoMdExit } from "react-icons/io";
@@ -246,6 +246,15 @@ export function NavbarWidget({ username = "Username", coins = 0, className = "" 
               >
                 <FaCog className="text-[20px] leading-none" />
                 <span>Perfil</span>
+              </Link>
+
+              <Link
+                href="/home/creations"
+                onClick={() => setMenuOpen(false)}
+                className="flex items-center gap-3 rounded-xl px-2 py-2 text-[16px] font-normal transition-colors hover:bg-[#FCE8F4]"
+              >
+                <FaPaintBrush className="text-[20px] leading-none" />
+                <span>Minhas Cartas</span>
               </Link>
 
               <form action={logout} className="mt-1.5">

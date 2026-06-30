@@ -91,7 +91,8 @@ export async function getUserCards(profileId: string) {
         id,
         name,
         rarity,
-        image_path
+        image_path,
+        profiles:profiles!cats_submitter_id_fkey(username)
       )
     `)
     .eq('profile_id', profileId);
@@ -101,8 +102,23 @@ export async function getUserCards(profileId: string) {
     return [];
   }
 
-  return data.map((row) => ({
-    quantity: row.quantity,
-    cat: Array.isArray(row.cat) ? row.cat[0] : (row.cat as unknown as { id: number; name: string; rarity: string; image_path: string }),
-  })).filter(row => row.cat !== null && row.cat !== undefined);
+  return data.map((row) => {
+    const rawCat: any = Array.isArray(row.cat) ? row.cat[0] : row.cat;
+    if (!rawCat) return { quantity: row.quantity, cat: null };
+    
+    // Normalize profiles array/object to a single object
+    const profilesVal = rawCat.profiles;
+    const profile = Array.isArray(profilesVal) ? profilesVal[0] : profilesVal;
+    
+    return {
+      quantity: row.quantity,
+      cat: {
+        id: rawCat.id,
+        name: rawCat.name,
+        rarity: rawCat.rarity,
+        image_path: rawCat.image_path,
+        profiles: profile ? { username: profile.username } : null
+      }
+    };
+  }).filter(row => row.cat !== null && row.cat !== undefined) as any;
 }

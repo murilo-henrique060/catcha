@@ -10,6 +10,8 @@ type CardProps = {
   start_face: CardFace;
   image_url?: string;
   className?: string;
+  children?: React.ReactNode;
+  watermark?: string;
 };
 
 const rarityColors: Record<CardRarity, [string, string, string]> = {
@@ -35,7 +37,7 @@ const rarityColors: Record<CardRarity, [string, string, string]> = {
   ],
 };
 
-export function CardWidget({ title, rarity = CardRarity.C, start_face: initial_face = CardFace.FRONT, image_url, className }: CardProps) {
+export function CardWidget({ title, rarity = CardRarity.C, start_face: initial_face = CardFace.FRONT, image_url, className, children, watermark }: CardProps) {
   const [face, setFace] = useState(initial_face);
 
   useEffect(() => {
@@ -75,16 +77,24 @@ export function CardWidget({ title, rarity = CardRarity.C, start_face: initial_f
             }}
           >
             <div 
-              className="flex flex-col h-full p-[2.5cqw]" 
+              className="flex flex-col h-full p-[2.5cqw] relative overflow-hidden" 
               style={{ 
-                backgroundImage: `url(${image_url ?? '/cats/cat001.webp'})`, 
+                backgroundImage: image_url ? `url(${image_url})` : 'none', 
                 backgroundSize: 'cover', 
                 backgroundPosition: 'center',
                 borderRadius: '2.5cqw'
               }}
             >
+              {children && (
+                <div 
+                  className="absolute inset-0 z-0 flex items-center justify-center overflow-hidden"
+                  style={{ borderRadius: '2.5cqw' }}
+                >
+                  {children}
+                </div>
+              )}
               <div 
-                className="flex justify-between py-[2.5cqw] px-[4cqw] shadow-[0_0.8cqw_1.6cqw_0_rgba(0,0,0,0.25)]" 
+                className="relative z-10 flex justify-between py-[2.5cqw] px-[4cqw] shadow-[0_0.8cqw_1.6cqw_0_rgba(0,0,0,0.25)]" 
                 style={{ 
                   background: rarityColors[rarity][2],
                   borderRadius: '2.5cqw'
@@ -97,6 +107,18 @@ export function CardWidget({ title, rarity = CardRarity.C, start_face: initial_f
                   {title}
                 </h2>
               </div>
+              
+              {watermark && (
+                <div 
+                  className="absolute bottom-[4cqw] right-[4cqw] z-20 opacity-75 font-bold text-white pointer-events-none"
+                  style={{ 
+                    fontSize: '5.5cqw',
+                    textShadow: '0 0.5cqw 1cqw rgba(0,0,0,0.8)'
+                  }}
+                >
+                  @{watermark}
+                </div>
+              )}
             </div>
           </div>
         </div>

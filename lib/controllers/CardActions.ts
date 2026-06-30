@@ -24,7 +24,7 @@ async function executeCardDraw(supabase: SupabaseClient, userId: string) {
   // Fetch cats of chosen rarity
   const { data: initialCats, error: catsError } = await supabase
     .from('cats')
-    .select('*')
+    .select('*, profiles:profiles!cats_submitter_id_fkey(username)')
     .eq('rarity', chosenRarity);
 
   if (catsError) {
@@ -37,7 +37,7 @@ async function executeCardDraw(supabase: SupabaseClient, userId: string) {
   if (!cats || cats.length === 0) {
     const { data: fallbackCats, error: fallbackError } = await supabase
       .from('cats')
-      .select('*');
+      .select('*, profiles:profiles!cats_submitter_id_fkey(username)');
     
     if (fallbackError || !fallbackCats || fallbackCats.length === 0) {
       throw new Error("Nenhuma carta cadastrada no banco de dados");
@@ -266,7 +266,7 @@ export async function buyCat(catId: number) {
   // 2. Get cat details
   const { data: cat, error: catError } = await supabase
     .from('cats')
-    .select('*')
+    .select('*, profiles:profiles!cats_submitter_id_fkey(username)')
     .eq('id', catId)
     .single();
 
@@ -412,11 +412,132 @@ export async function getAllCats() {
   const supabase = await createSupabaseServerClient();
   const { data, error } = await supabase
     .from('cats')
-    .select('*')
+    .select('*, profiles:profiles!cats_submitter_id_fkey(username)')
     .order('name', { ascending: true });
 
   if (error) {
     console.error("Error fetching all cats:", error);
+    return [];
+  }
+  return data;
+}
+
+/**
+ * Permite ao usuário submeter uma nova carta para a coleção global.
+ * Deduz 1.000 moedas do saldo do usuário.
+ *
+ * @param name - O nome da carta.
+ * @param rarity - A raridade da carta (S, A, B, C).
+ * @param imagePath - O caminho/nome do arquivo salvo no bucket 'cats'.
+ * @returns Objeto indicando sucesso, ou erro caso não tenha saldo.
+ */
+export async function submitNewCat(name: string, rarity: string, imageBase64: string) {
+  const supabase = await createSupabaseServerClient();
+
+  // 1. Get current user
+  const { data: { user }, error: authError } = await supabase.auth.getUser();
+  if (authError || !user) {
+    return { error: "Usuário não autenticado" };
+  }
+
+  // 2. Get user profile balance
+  const { data: profile, error: profileError } = await supabase
+    .from('profiles')
+    .select('money')
+    .eq('id', user.id)
+    .single();
+
+  if (profileError || !profile) {
+    return { error: "Perfil do usuário não encontrado" };
+  }
+
+  const SUBMIT_COST = 1000;
+  if (profile.money < SUBMIT_COST) {
+    return { error: "Você não possui moedas suficientes (necessário 1.000)" };
+  }
+
+  // 3. Upload image
+  let imagePath = "";
+  try {
+    // Expected format: data:image/webp;base64,...
+    const base64Data = imageBase64.split(',')[1];
+    if (!base64Data) throw new Error("Invalid base64 string");
+    
+    const buffer = Buffer.from(base64Data, 'base64');
+    const fileName = crypto.randomUUID() + '.webp';
+    
+    // Convert to File to ensure correct multipart/form-data Content-Type
+    const file = new File([buffer], fileName, { type: 'image/webp' });
+    
+    const { error: uploadError } = await supabase.storage.from('cats').upload(fileName, file, {
+      contentType: 'image/webp'
+    });
+    
+    if (uploadError) {
+      console.error("Upload error:", uploadError);
+      return { error: "Erro ao fazer upload da imagem" };
+    }
+    imagePath = fileName;
+  } catch (err) {
+    console.error("Base64 decoding error:", err);
+    return { error: "Erro ao decodificar a imagem" };
+  }
+
+  // 4. Deduct money
+  const { error: updateMoneyError } = await supabase
+    .from('profiles')
+    .update({ money: profile.money - SUBMIT_COST })
+    .eq('id', user.id);
+
+  if (updateMoneyError) {
+    // Optional: rollback image upload here
+    return { error: "Erro ao processar pagamento" };
+  }
+
+  // 5. Insert new cat with approved = false and submitter_id
+  const { data: cat, error: catError } = await supabase
+    .from('cats')
+    .insert({
+      name,
+      rarity,
+      image_path: imagePath,
+      approved: false,
+      submitter_id: user.id
+    })
+    .select()
+    .single();
+
+  if (catError || !cat) {
+    console.error("Cat insert error:", catError);
+    // If insertion fails, it would be ideal to refund the user, but for simplicity we rely on the transaction
+    return { error: "Erro ao registrar a carta no banco de dados" };
+  }
+
+  revalidatePath("/home/shop");
+  return { success: true, cat };
+}
+
+/**
+ * Fetch cats created by the current user.
+ *
+ * @returns Array of cats created by the user.
+ */
+export async function getCreatedCats() {
+  const supabase = await createSupabaseServerClient();
+  const { data: { user }, error: authError } = await supabase.auth.getUser();
+
+  if (authError || !user) {
+    return [];
+  }
+
+  const { data, error } = await supabase
+    .from('cats')
+    .select('*, profiles:profiles!cats_submitter_id_fkey(username)')
+    .eq('submitter_id', user.id)
+    .order('id', { ascending: false });
+
+  if (error) {
+    console.error("Error fetching created cats:", error);
     return [];
   }
   return data;

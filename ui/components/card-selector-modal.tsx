@@ -5,6 +5,7 @@ import { useUser } from "@/lib/contexts/UserContext";
 import { useState, useMemo } from "react";
 import { CardWidget } from "@/ui/widgets/card";
 import { CardFace, CardRarity } from "@/ui/widgets/card-types";
+import { getCatImageUrl } from "@/lib/utils";
 
 type CardSelectorModalProps = {
   isOpen: boolean;
@@ -105,7 +106,8 @@ export function CardSelectorModal({ isOpen, onClose, onSelect, title, rarityFilt
                     title={c.cat.name}
                     rarity={mapRarity(c.cat.rarity)}
                     start_face={CardFace.FRONT}
-                    image_url={c.cat.image_path}
+                    image_url={getCatImageUrl(c.cat.image_path)}
+                    watermark={c.cat.profiles?.username}
                   />
                   {/* Quantity Badge overlay on bottom center */}
                   <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 z-10 flex h-6 min-w-[24px] items-center justify-center rounded-full bg-[#B01070] px-2 text-[12px] font-bold text-white shadow-md">
