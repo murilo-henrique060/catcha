@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import { redirect } from "next/navigation";
-import { getUserProfile } from "@/lib/controllers/UserController";
+import { getBasicProfile } from "@/lib/controllers/UserController";
 import { NavbarWidget } from "@/ui/widgets/navbar";
 import { NavbarSkeleton } from "@/ui/components/skeletons";
 
@@ -20,7 +20,7 @@ export default async function HomeLayout({
 }
 
 async function HomeNavbarWrapper() {
-  const profileData = await getUserProfile();
+  const profileData = await getBasicProfile();
 
   if (!profileData || !profileData.profile) {
     redirect("/auth/login");

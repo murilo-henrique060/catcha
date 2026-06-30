@@ -2,7 +2,7 @@ export const unstable_instant = { prefetch: "static" };
 
 import { Suspense } from "react";
 import { redirect } from "next/navigation";
-import { getUserProfile } from "@/lib/controllers/UserController";
+import { getBasicProfile } from "@/lib/controllers/UserController";
 import { getPublicPlayers } from "@/lib/controllers/FriendController";
 import { getAllCats } from "@/lib/controllers/CardActions";
 import { PublicWidget } from "@/ui/widgets/public-widget";
@@ -17,7 +17,7 @@ export default async function PublicPage() {
 }
 
 async function PublicContent() {
-  const profileData = await getUserProfile();
+  const profileData = await getBasicProfile();
 
   if (!profileData || !profileData.profile) {
     redirect("/auth/login");

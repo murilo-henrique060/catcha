@@ -2,7 +2,8 @@ export const unstable_instant = { prefetch: "static" };
 
 import { Suspense } from "react";
 import { redirect } from "next/navigation";
-import { getUserProfile } from "@/lib/controllers/UserController";
+import { getBasicProfile } from "@/lib/controllers/UserController";
+import { getUserCards } from "@/lib/controllers/CardController";
 import { AlbumWidget } from "@/ui/widgets/album-widget";
 import { AlbumSkeleton } from "@/ui/components/skeletons";
 
@@ -15,13 +16,14 @@ export default async function AlbumPage() {
 }
 
 async function AlbumContent() {
-  const profileData = await getUserProfile();
+  const profileData = await getBasicProfile();
 
   if (!profileData || !profileData.profile) {
     redirect("/auth/login");
   }
 
-  const { profile, cards } = profileData;
+  const { profile } = profileData;
+  const cards = await getUserCards(profile.id);
   const username = profile.username ?? "Username";
 
   return (

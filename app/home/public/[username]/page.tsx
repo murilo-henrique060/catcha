@@ -9,7 +9,7 @@ export const unstable_instant = {
 
 import { Suspense } from "react";
 import { redirect, notFound } from "next/navigation";
-import { getUserProfile } from "@/lib/controllers/UserController";
+import { getBasicProfile } from "@/lib/controllers/UserController";
 import { getUserCards } from "@/lib/controllers/CardController";
 import { AlbumWidget } from "@/ui/widgets/album-widget";
 import { createSupabaseServerClient } from "@/lib/services/supabase/server";
@@ -31,7 +31,7 @@ export default async function PublicPlayerAlbumPage({ params }: PageProps) {
 
 async function PublicPlayerAlbumContent({ params }: { params: Promise<{ username: string }> }) {
   const resolvedParams = await params;
-  const currentProfileData = await getUserProfile();
+  const currentProfileData = await getBasicProfile();
 
   if (!currentProfileData || !currentProfileData.profile) {
     redirect("/auth/login");

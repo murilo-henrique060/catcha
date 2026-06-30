@@ -2,7 +2,7 @@ export const unstable_instant = { prefetch: "static" };
 
 import { Suspense } from "react";
 import { redirect } from "next/navigation";
-import { getUserProfile } from "@/lib/controllers/UserController";
+import { getBasicProfile } from "@/lib/controllers/UserController";
 import { DRAW_INTERVAL_MS, getCardsCountPerRarity } from "@/lib/controllers/CardController";
 import { StatsWidget } from "@/ui/widgets/stats";
 import { DrawArea } from "@/ui/widgets/draw-area";
@@ -17,7 +17,7 @@ export default async function HomePage() {
 }
 
 async function HomeContent() {
-  const profileData = await getUserProfile();
+  const profileData = await getBasicProfile();
 
   if (!profileData || !profileData.profile) {
     redirect("/auth/login");

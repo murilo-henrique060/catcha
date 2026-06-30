@@ -7,6 +7,80 @@ import { getUserItems } from "./ItemController";
 import { getCurrentExchange } from "./ExchangeController";
 
 /**
+ * Busca apenas os detalhes essenciais do perfil de um usuário (ou do usuário autenticado se `userId` não for fornecido).
+ * Usado na renderização inicial do layout e rotas para evitar lentidão (Time to First Byte alto) 
+ * causada por buscar todo o inventário/notificações quando não são necessários.
+ * Esta função utiliza o `cache` do React para evitar chamadas redundantes.
+ *
+ * @param userId - (Opcional) O UUID do perfil a buscar.
+ * @returns Os dados básicos do perfil e o e-mail (se autorizado) ou `null` em caso de falha.
+ */
+export const getBasicProfile = cache(async (userId?: string) => {
+  const supabase = await createSupabaseServerClient();
+
+  let targetUserId = userId;
+  let email: string | undefined;
+
+  if (!targetUserId) {
+    const { data, error: authError } = await supabase.auth.getUser();
+    if (authError || !data?.user) {
+      if (authError && authError.name !== 'AuthSessionMissingError') {
+        console.error("Error getting authenticated user:", authError);
+      }
+      return null;
+    }
+    targetUserId = data.user.id;
+    email = data.user.email;
+  } else {
+    const { data } = await supabase.auth.getUser();
+    if (data?.user && data.user.id === targetUserId) {
+      email = data.user.email;
+    }
+  }
+
+  const { data: fetchedProfile, error: profileError } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('id', targetUserId)
+    .maybeSingle();
+
+  if (profileError) {
+    console.error("Error fetching basic user profile:", profileError);
+    return null;
+  }
+
+  let profile = fetchedProfile;
+
+  if (!profile && !userId) {
+    const shortId = targetUserId.substring(0, 8);
+    const defaultUsername = `user_${shortId}`;
+    
+    const { data: newProfile, error: insertError } = await supabase
+      .from('profiles')
+      .insert({
+        id: targetUserId,
+        username: defaultUsername,
+        money: 100,
+      })
+      .select()
+      .maybeSingle();
+
+    if (insertError || !newProfile) {
+      console.error("Failed to auto-create missing profile:", insertError);
+      return null;
+    }
+    profile = newProfile;
+  } else if (!profile) {
+    return null;
+  }
+
+  return {
+    profile,
+    email: email || null,
+  };
+});
+
+/**
  * Busca os detalhes do perfil de um usuário (ou do usuário autenticado se `userId` não for fornecido).
  * Além das informações básicas, esta função calcula estatísticas agregadas (como quantidade de amigos, 
  * presentes recebidos pendentes, e trocas pendentes) para exibir notificações na interface.
