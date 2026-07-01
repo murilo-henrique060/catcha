@@ -15,6 +15,7 @@ export type UserProfileData = {
     next_draw: string;
     created_at: string;
     updated_at: string;
+    role: string;
   } | null;
   email: string | null;
   items: {
@@ -51,6 +52,7 @@ export type UserProfileData = {
     pendingFriendRequests: number;
     activeTradesCount: number;
     pendingGiftsCount: number;
+    pendingCardsCount: number;
     total: number;
   };
 };
@@ -72,6 +74,7 @@ const defaultProfileData: UserProfileData = {
     pendingFriendRequests: 0,
     activeTradesCount: 0,
     pendingGiftsCount: 0,
+    pendingCardsCount: 0,
     total: 0,
   }
 };

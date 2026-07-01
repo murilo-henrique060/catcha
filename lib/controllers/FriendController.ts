@@ -188,11 +188,12 @@ export async function getPublicPlayers() {
     return [];
   }
 
-  // 1. Fetch all profiles except current user
+  // 1. Fetch all profiles except current user and superadmins
   const { data: profiles, error: profilesError } = await supabase
     .from('profiles')
-    .select('id, username')
-    .neq('id', user.id);
+    .select('id, username, role')
+    .neq('id', user.id)
+    .neq('role', 'superadmin');
 
   if (profilesError || !profiles) {
     console.error("Error fetching profiles:", profilesError);
@@ -241,6 +242,7 @@ export async function getPublicPlayers() {
   interface ProfileItem {
     id: string;
     username: string;
+    role: string;
   }
 
   return (profiles as unknown as ProfileItem[]).map((p) => {
@@ -248,6 +250,7 @@ export async function getPublicPlayers() {
     return {
       id: p.id,
       username: p.username,
+      role: p.role,
       uniqueCards: countMap.get(p.id) || 0,
       friendshipStatus: relationship ? relationship.status : 'none',
       isOutgoingRequest: relationship ? relationship.isOutgoing : false

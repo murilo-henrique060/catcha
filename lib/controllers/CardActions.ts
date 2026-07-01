@@ -25,6 +25,7 @@ async function executeCardDraw(supabase: SupabaseClient, userId: string) {
   const { data: initialCats, error: catsError } = await supabase
     .from('cats')
     .select('*, profiles:profiles!cats_submitter_id_fkey(username)')
+    .eq('status', 'approved')
     .eq('rarity', chosenRarity);
 
   if (catsError) {
@@ -37,7 +38,8 @@ async function executeCardDraw(supabase: SupabaseClient, userId: string) {
   if (!cats || cats.length === 0) {
     const { data: fallbackCats, error: fallbackError } = await supabase
       .from('cats')
-      .select('*, profiles:profiles!cats_submitter_id_fkey(username)');
+      .select('*, profiles:profiles!cats_submitter_id_fkey(username)')
+      .eq('status', 'approved');
     
     if (fallbackError || !fallbackCats || fallbackCats.length === 0) {
       throw new Error("Nenhuma carta cadastrada no banco de dados");
@@ -413,6 +415,7 @@ export async function getAllCats() {
   const { data, error } = await supabase
     .from('cats')
     .select('*, profiles:profiles!cats_submitter_id_fkey(username)')
+    .eq('status', 'approved')
     .order('name', { ascending: true });
 
   if (error) {
@@ -501,7 +504,7 @@ export async function submitNewCat(name: string, rarity: string, imageBase64: st
       name,
       rarity,
       image_path: imagePath,
-      approved: false,
+      status: 'pending',
       submitter_id: user.id
     })
     .select()
@@ -541,4 +544,104 @@ export async function getCreatedCats() {
     return [];
   }
   return data;
+}
+
+/**
+ * Busca todas as cartas pendentes de aprovação.
+ *
+ * @returns Array de cartas pendentes.
+ */
+export async function getPendingCards() {
+  const supabase = await createSupabaseServerClient();
+  const { data, error } = await supabase
+    .from('cats')
+    .select('*, profiles:profiles!cats_submitter_id_fkey(username)')
+    .eq('status', 'pending')
+    .order('id', { ascending: false });
+
+  if (error) {
+    console.error("Error fetching pending cards:", error);
+    return [];
+  }
+  return data;
+}
+
+/**
+ * Aprova uma carta pendente.
+ */
+export async function approveCard(catId: number) {
+  const supabase = await createSupabaseServerClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { error: "Não autenticado" };
+  const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single();
+  if (profile?.role !== 'admin' && profile?.role !== 'superadmin') return { error: "Sem permissão" };
+
+  const { error } = await supabase
+    .from('cats')
+    .update({ status: 'approved' })
+    .eq('id', catId);
+
+  if (error) return { error: "Erro ao aprovar carta" };
+  revalidatePath("/home/admin/pedidos");
+  revalidatePath("/home/album");
+  revalidatePath("/home");
+  return { success: true };
+}
+
+/**
+ * Rejeita uma carta pendente com uma mensagem.
+ */
+export async function rejectCard(catId: number, message: string) {
+  const supabase = await createSupabaseServerClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { error: "Não autenticado" };
+  const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single();
+  if (profile?.role !== 'admin' && profile?.role !== 'superadmin') return { error: "Sem permissão" };
+
+  const { error } = await supabase
+    .from('cats')
+    .update({ status: 'rejected', reject_message: message })
+    .eq('id', catId);
+
+  if (error) return { error: "Erro ao rejeitar carta" };
+  revalidatePath("/home/admin/pedidos");
+  return { success: true };
+}
+
+/**
+ * Remove uma carta rejeitada enviada pelo próprio usuário.
+ */
+export async function deleteRejectedCard(catId: number) {
+  const supabase = await createSupabaseServerClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { error: "Não autenticado" };
+
+  // 1. Obter o image_path para deletar o arquivo do bucket
+  const { data: catData, error: catError } = await supabase
+    .from('cats')
+    .select('image_path')
+    .eq('id', catId)
+    .eq('submitter_id', user.id)
+    .eq('status', 'rejected')
+    .single();
+
+  if (catError || !catData) return { error: "Carta não encontrada ou sem permissão" };
+
+  // 2. Excluir o registro do banco de dados
+  const { error } = await supabase
+    .from('cats')
+    .delete()
+    .eq('id', catId)
+    .eq('submitter_id', user.id)
+    .eq('status', 'rejected');
+
+  if (error) return { error: "Erro ao excluir carta do banco de dados" };
+
+  // 3. Excluir o arquivo de imagem do bucket
+  if (catData.image_path) {
+    await supabase.storage.from('cats').remove([catData.image_path]);
+  }
+
+  revalidatePath("/home/creations");
+  return { success: true };
 }

@@ -11,14 +11,16 @@ type PublicPlayer = {
   uniqueCards: number;
   friendshipStatus: string; // 'none' | 'pending' | 'accepted'
   isOutgoingRequest: boolean;
+  role: string;
 };
 
 type PublicWidgetProps = {
   players: PublicPlayer[];
   totalCatsCount: number;
+  currentUserRole: string;
 };
 
-export function PublicWidget({ players: initialPlayers, totalCatsCount }: PublicWidgetProps) {
+export function PublicWidget({ players: initialPlayers, totalCatsCount, currentUserRole }: PublicWidgetProps) {
   const [players, setPlayers] = useState<PublicPlayer[]>(initialPlayers);
   const [search, setSearch] = useState("");
   const [isProcessing, setIsProcessing] = useState<string | null>(null);
@@ -55,6 +57,44 @@ export function PublicWidget({ players: initialPlayers, totalCatsCount }: Public
     } catch (e) {
       console.error(e);
       setErrorMessage("Erro ao processar a operação");
+    } finally {
+      setIsProcessing(null);
+    }
+  };
+
+  const handleMakeAdmin = async (playerId: string, username: string) => {
+    setIsProcessing(playerId + "_admin");
+    setErrorMessage(null);
+    setSuccessMessage(null);
+    try {
+      const { makeAdmin } = await import('@/lib/controllers/UserController');
+      const res = await makeAdmin(playerId);
+      if (res.error) setErrorMessage(res.error);
+      else {
+        setSuccessMessage(`${username} agora é um administrador!`);
+        setPlayers(prev => prev.map(p => p.id === playerId ? { ...p, role: 'admin' } : p));
+      }
+    } catch (e) {
+      setErrorMessage("Erro ao processar");
+    } finally {
+      setIsProcessing(null);
+    }
+  };
+
+  const handleRemoveAdmin = async (playerId: string, username: string) => {
+    setIsProcessing(playerId + "_unadmin");
+    setErrorMessage(null);
+    setSuccessMessage(null);
+    try {
+      const { removeAdmin } = await import('@/lib/controllers/UserController');
+      const res = await removeAdmin(playerId);
+      if (res.error) setErrorMessage(res.error);
+      else {
+        setSuccessMessage(`${username} não é mais administrador.`);
+        setPlayers(prev => prev.map(p => p.id === playerId ? { ...p, role: 'user' } : p));
+      }
+    } catch (e) {
+      setErrorMessage("Erro ao processar");
     } finally {
       setIsProcessing(null);
     }
@@ -129,7 +169,7 @@ export function PublicWidget({ players: initialPlayers, totalCatsCount }: Public
                       {player.username}
                     </h4>
                     <p className="text-gray-400 text-[11px] font-medium leading-none mt-1">
-                      Jogador Registrado
+                      {player.role === 'admin' ? 'Administrador' : 'Jogador Registrado'}
                     </p>
                   </div>
                 </div>
@@ -187,6 +227,26 @@ export function PublicWidget({ players: initialPlayers, totalCatsCount }: Public
                     <FaUserFriends />
                     Amigos
                   </div>
+                )}
+                
+                {/* Admin Actions */}
+                {(currentUserRole === 'admin' || currentUserRole === 'superadmin') && player.role === 'user' && (
+                  <button
+                    onClick={() => handleMakeAdmin(player.id, player.username)}
+                    disabled={isProcessing !== null}
+                    className="flex items-center justify-center gap-2 py-2.5 px-3 col-span-2 rounded-xl bg-indigo-50 border border-indigo-200 hover:bg-indigo-100 text-indigo-700 font-bold uppercase text-[11px] tracking-wider transition-colors shadow-sm cursor-pointer disabled:opacity-50 select-none"
+                  >
+                    Tornar Admin
+                  </button>
+                )}
+                {currentUserRole === 'superadmin' && player.role === 'admin' && (
+                  <button
+                    onClick={() => handleRemoveAdmin(player.id, player.username)}
+                    disabled={isProcessing !== null}
+                    className="flex items-center justify-center gap-2 py-2.5 px-3 col-span-2 rounded-xl bg-red-50 border border-red-200 hover:bg-red-100 text-red-700 font-bold uppercase text-[11px] tracking-wider transition-colors shadow-sm cursor-pointer disabled:opacity-50 select-none"
+                  >
+                    Remover Admin
+                  </button>
                 )}
               </div>
 

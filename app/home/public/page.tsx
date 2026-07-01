@@ -28,7 +28,7 @@ async function PublicContent() {
 
   return (
     <section className="flex-grow">
-      <PublicWidget players={players} totalCatsCount={allCats.length} />
+      <PublicWidget players={players} totalCatsCount={allCats.length} currentUserRole={profileData.profile.role} />
     </section>
   );
 }

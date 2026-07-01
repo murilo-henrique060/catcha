@@ -6,6 +6,8 @@ O backend do Catcha está totalmente contido dentro do diretório `/lib/controll
 
 O diagrama a seguir ilustra os principais módulos dentro do diretório `/lib/controllers` e suas responsabilidades chaves.
 
+![Diagrama de Classes](/docs/images/class-diagram.png)
+
 ```plantuml
 @startuml
 skinparam packageStyle rectangle

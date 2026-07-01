@@ -2,11 +2,12 @@
 
 import { useState, useMemo } from "react";
 import Link from "next/link";
-import { FaSearch, FaArrowLeft, FaCheckCircle, FaClock } from "react-icons/fa";
+import { FaSearch, FaArrowLeft, FaCheckCircle, FaClock, FaTrash } from "react-icons/fa";
 import { TbCardsFilled } from "react-icons/tb";
 import { CardWidget } from "./card";
 import { CardFace, CardRarity } from "./card-types";
 import { getCatImageUrl } from "@/lib/utils";
+import { deleteRejectedCard } from "@/lib/controllers/CardActions";
 
 type CreationsWidgetProps = {
   createdCats: {
@@ -14,7 +15,8 @@ type CreationsWidgetProps = {
     name: string;
     rarity: string;
     image_path: string;
-    approved: boolean;
+    status: string;
+    reject_message?: string;
     profiles?: { username: string } | { username: string }[] | null;
   }[];
 };
@@ -30,15 +32,26 @@ const mapRarity = (rarity: string): CardRarity => {
 
 export function CreationsWidget({ createdCats }: CreationsWidgetProps) {
   const [search, setSearch] = useState("");
+  const [localCats, setLocalCats] = useState(createdCats);
+  const [isDeleting, setIsDeleting] = useState<number | null>(null);
 
   const processedCats = useMemo(() => {
-    let result = [...createdCats];
+    let result = [...localCats];
     if (search) {
       const q = search.toLowerCase();
       result = result.filter(c => c.name.toLowerCase().includes(q));
     }
     return result;
-  }, [createdCats, search]);
+  }, [localCats, search]);
+
+  const handleDelete = async (id: number) => {
+    setIsDeleting(id);
+    const result = await deleteRejectedCard(id);
+    if (result.success) {
+      setLocalCats(prev => prev.filter(c => c.id !== id));
+    }
+    setIsDeleting(null);
+  };
 
   return (
     <div className="flex h-full w-full flex-col bg-[#FFFAFD]">
@@ -63,7 +76,7 @@ export function CreationsWidget({ createdCats }: CreationsWidgetProps) {
             </div>
             <div>
               <p className="text-[14px] font-medium text-[#666666]">Total Criadas</p>
-              <p className="text-[24px] font-bold leading-none text-[#1A1A1A]">{createdCats.length}</p>
+              <p className="text-[24px] font-bold leading-none text-[#1A1A1A]">{localCats.length}</p>
             </div>
           </div>
 
@@ -105,10 +118,22 @@ export function CreationsWidget({ createdCats }: CreationsWidgetProps) {
                     />
                     
                     <div className="absolute bottom-2.5 left-2.5 z-10 flex items-center gap-1 rounded-full bg-black/75 px-2.5 py-1 shadow-md backdrop-blur-md">
-                      {cat.approved ? (
+                      {cat.status === 'approved' ? (
                         <>
                           <FaCheckCircle className="text-[12px] text-green-400" />
                           <span className="text-[10px] font-bold text-white uppercase">Aprovada</span>
+                        </>
+                      ) : cat.status === 'rejected' ? (
+                        <>
+                          <div className="flex items-center gap-1 group relative">
+                            <FaClock className="text-[12px] text-red-400" />
+                            <span className="text-[10px] font-bold text-white uppercase cursor-help">Rejeitada</span>
+                            {cat.reject_message && (
+                              <div className="absolute bottom-full left-0 mb-2 hidden w-48 rounded-lg bg-black/90 p-2 text-xs text-white shadow-lg group-hover:block">
+                                {cat.reject_message}
+                              </div>
+                            )}
+                          </div>
                         </>
                       ) : (
                         <>
@@ -117,6 +142,20 @@ export function CreationsWidget({ createdCats }: CreationsWidgetProps) {
                         </>
                       )}
                     </div>
+
+                    {cat.status === 'rejected' && (
+                      <button
+                        disabled={isDeleting === cat.id}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDelete(cat.id);
+                        }}
+                        className="absolute top-2.5 right-2.5 z-20 flex h-8 w-8 items-center justify-center rounded-full bg-red-500 text-white shadow-md transition-transform hover:scale-110 disabled:opacity-50"
+                        title="Excluir carta rejeitada"
+                      >
+                        <FaTrash className="text-[12px]" />
+                      </button>
+                    )}
                   </div>
                 );
               })}

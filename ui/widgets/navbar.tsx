@@ -39,6 +39,8 @@ export function NavbarWidget({ username = "Username", coins = 0, className = "" 
     ? (items.find((i) => i.item.type === 'skip' || i.item.name === 'Acelerar')?.quantity ?? 0)
     : 0;
 
+  const isAdmin = (!isLoading && profile) ? (profile.role === 'admin' || profile.role === 'superadmin') : false;
+
   const [animatedCoins, setAnimatedCoins] = useState(displayCoins);
   const [isUpdating, setIsUpdating] = useState(false);
   const [hasInitialized, setHasInitialized] = useState(false);
@@ -209,9 +211,12 @@ export function NavbarWidget({ username = "Username", coins = 0, className = "" 
             aria-expanded={menuOpen}
             aria-haspopup="menu"
             onClick={() => setMenuOpen((currentValue) => !currentValue)}
-            className="grid h-8 w-8 place-items-center rounded-full text-white transition-colors hover:bg-white/10 hover:text-white/80"
+            className="relative grid h-8 w-8 place-items-center rounded-full text-white transition-colors hover:bg-white/10 hover:text-white/80"
           >
             <HiDotsVertical className="text-[22px]" />
+            {isAdmin && notifications && notifications.pendingCardsCount > 0 && (
+              <span className="absolute top-0 right-0 h-2.5 w-2.5 rounded-full bg-red-500 shadow-sm border border-[#C40873]" />
+            )}
           </button>
 
           {menuOpen ? (
@@ -256,6 +261,22 @@ export function NavbarWidget({ username = "Username", coins = 0, className = "" 
                 <FaPaintBrush className="text-[20px] leading-none" />
                 <span>Minhas Cartas</span>
               </Link>
+
+              {isAdmin && (
+                <Link
+                  href="/home/admin/pedidos"
+                  onClick={() => setMenuOpen(false)}
+                  className="flex items-center gap-3 rounded-xl px-2 py-2 text-[16px] font-normal transition-colors hover:bg-[#FCE8F4]"
+                >
+                  <TbCardsFilled className="text-[20px] leading-none" />
+                  <span>Pedidos de Carta</span>
+                  {notifications && notifications.pendingCardsCount > 0 && (
+                    <span className="ml-auto flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white shadow-sm">
+                      {notifications.pendingCardsCount}
+                    </span>
+                  )}
+                </Link>
+              )}
 
               <form action={logout} className="mt-1.5">
                 <button

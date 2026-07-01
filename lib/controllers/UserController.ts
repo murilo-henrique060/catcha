@@ -5,6 +5,7 @@ import { createSupabaseServerClient } from "@/lib/services/supabase/server";
 import { getUserCards } from "./CardController";
 import { getUserItems } from "./ItemController";
 import { getCurrentExchange } from "./ExchangeController";
+import { revalidatePath } from "next/cache";
 
 /**
  * Busca apenas os detalhes essenciais do perfil de um usuário (ou do usuário autenticado se `userId` não for fornecido).
@@ -164,7 +165,8 @@ export const getUserProfile = cache(async (userId?: string) => {
     friendRequestsRes,
     incomingPendingTradesRes,
     outgoingCounteredTradesRes,
-    pendingGiftsRes
+    pendingGiftsRes,
+    pendingCardsRes
   ] = await Promise.all([
     getUserItems(targetUserId),
     getUserCards(targetUserId),
@@ -173,12 +175,16 @@ export const getUserProfile = cache(async (userId?: string) => {
     supabase.from('trades').select('*', { count: 'exact', head: true }).eq('receiver_id', targetUserId).eq('status', 'pending'),
     supabase.from('trades').select('*', { count: 'exact', head: true }).eq('sender_id', targetUserId).eq('status', 'countered'),
     supabase.from('gifts').select('*', { count: 'exact', head: true }).eq('receiver_id', targetUserId).eq('status', 'pending'),
+    (profile.role === 'admin' || profile.role === 'superadmin') 
+      ? supabase.from('cats').select('*', { count: 'exact', head: true }).eq('status', 'pending')
+      : Promise.resolve({ count: 0 })
   ]);
 
   const pendingFriendRequests = friendRequestsRes.count || 0;
   const activeTradesCount = (incomingPendingTradesRes.count || 0) + (outgoingCounteredTradesRes.count || 0);
   const pendingGiftsCount = pendingGiftsRes.count || 0;
-  const totalNotifications = pendingFriendRequests + activeTradesCount + pendingGiftsCount;
+  const pendingCardsCount = pendingCardsRes.count || 0;
+  const totalNotifications = pendingFriendRequests + activeTradesCount + pendingGiftsCount + pendingCardsCount;
 
   return {
     profile,
@@ -190,6 +196,7 @@ export const getUserProfile = cache(async (userId?: string) => {
       pendingFriendRequests,
       activeTradesCount,
       pendingGiftsCount,
+      pendingCardsCount,
       total: totalNotifications,
     }
   };
@@ -306,5 +313,55 @@ export async function deleteAccount() {
   }
 
   await supabase.auth.signOut();
+  return { success: true };
+}
+
+/**
+ * Promove um usuário para admin (requer que o usuário atual seja admin ou superadmin).
+ */
+export async function makeAdmin(targetUserId: string) {
+  const supabase = await createSupabaseServerClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { error: "Não autenticado" };
+
+  const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single();
+  if (profile?.role !== 'admin' && profile?.role !== 'superadmin') {
+    return { error: "Sem permissão" };
+  }
+
+  const { error } = await supabase
+    .from('profiles')
+    .update({ role: 'admin' })
+    .eq('id', targetUserId)
+    .neq('role', 'superadmin'); // Prevent accidentally modifying superadmin
+
+  if (error) return { error: "Erro ao promover usuário" };
+
+  revalidatePath("/home/public");
+  return { success: true };
+}
+
+/**
+ * Remove o cargo de admin de um usuário (requer que o usuário atual seja superadmin).
+ */
+export async function removeAdmin(targetUserId: string) {
+  const supabase = await createSupabaseServerClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { error: "Não autenticado" };
+
+  const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single();
+  if (profile?.role !== 'superadmin') {
+    return { error: "Sem permissão" };
+  }
+
+  const { error } = await supabase
+    .from('profiles')
+    .update({ role: 'user' })
+    .eq('id', targetUserId)
+    .neq('role', 'superadmin'); // Cannot demote superadmin
+
+  if (error) return { error: "Erro ao remover admin" };
+
+  revalidatePath("/home/public");
   return { success: true };
 }

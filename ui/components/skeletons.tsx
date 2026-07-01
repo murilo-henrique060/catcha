@@ -272,3 +272,29 @@ export function ProfileSkeleton() {
     </section>
   );
 }
+
+export function PedidosSkeleton() {
+  return (
+    <div className="mx-auto w-full max-w-[1200px] px-4 py-8 flex flex-col gap-6 select-none">
+      <div className="w-full bg-white rounded-2xl shadow-[0_4px_12px_rgba(0,0,0,0.08)] p-4 px-6 flex flex-col md:flex-row md:items-center justify-between gap-4 animate-pulse">
+        <div>
+          <div className="w-48 h-6 bg-[#B01070]/20 rounded" />
+          <div className="w-64 h-3 bg-gray-200/60 rounded mt-2" />
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 animate-pulse">
+        {Array.from({ length: 8 }).map((_, i) => (
+          <div key={i} className="bg-white border border-gray-100 rounded-3xl p-4 shadow-[0_4px_12px_rgba(0,0,0,0.06)] flex flex-col items-center gap-4">
+            <div className="w-full aspect-[0.714] bg-gray-200/60 rounded-[20px]" />
+            <div className="w-32 h-4 bg-gray-200/60 rounded" />
+            <div className="w-full flex gap-2 mt-2">
+              <div className="flex-grow h-10 bg-gray-100 rounded-xl" />
+              <div className="flex-grow h-10 bg-[#B01070]/20 rounded-xl" />
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}

@@ -12,6 +12,7 @@ Armazena dados do usuário e estado do jogo.
 - `username` (Text): Nome de exibição único.
 - `money` (Integer): Saldo de moeda do jogo.
 - `next_draw` (Timestamp): A hora exata em que o usuário tem permissão para sortear uma nova carta gratuitamente.
+- `role` (user_role): Define o nível de permissão do usuário (`user`, `admin`, `superadmin`).
 
 ### `cats`
 O catálogo central de todas as cartas possíveis no jogo.
@@ -19,9 +20,9 @@ O catálogo central de todas as cartas possíveis no jogo.
 - `name` (Text): Nome do gato.
 - `rarity` (Text): Define o valor e o peso/chance de drop (ex.: Comum, Rara, Lendária).
 - `image_path` (Text): Caminho para a imagem no bucket do Supabase Storage.
-- `approved` (Boolean): Indica se a carta foi aprovada para a coleção global.
-- `creator_id` (UUID): Referência a `profiles(id)`, indicando o jogador que criou a carta.
-- `created_at` (Timestamp): Quando a carta foi submetida.
+- `status` (user_role): Status da aprovação da carta (`pending`, `approved`, `rejected`).
+- `reject_message` (Text): Mensagem opcional indicando o motivo de rejeição.
+- `submitter_id` (UUID): Referência a `profiles(id)`, indicando o jogador que criou a carta.
 
 ### `profiles_cats`
 Uma junção muitos-para-muitos representando o Álbum/Inventário de um usuário.
