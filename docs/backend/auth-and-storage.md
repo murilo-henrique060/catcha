@@ -2,6 +2,10 @@
 
 O Catcha utiliza o Supabase tanto para Autenticação quanto para Armazenamento de Objetos (Storage). Isso garante um gerenciamento seguro, escalável e padronizado de identidades de usuários e ativos do jogo.
 
+## Modelo do Banco
+
+![Modelo do Banco](/docs/images/database-diagram.png)
+
 ## Autenticação
 
 A autenticação é totalmente gerenciada pelo Supabase Auth, integrado ao Next.js usando `@supabase/ssr` para lidar de forma segura com cookies em Server Components e Server Actions.
