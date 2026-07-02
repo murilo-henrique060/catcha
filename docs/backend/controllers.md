@@ -31,6 +31,8 @@ package "Backend (/lib/controllers)" {
     class UserController {
         + getUserProfile()
         + updateProfile(username: string)
+        + makeAdmin(targetUserId: string)
+        + removeAdmin(targetUserId: string)
     }
 
     class CardActions {
@@ -41,6 +43,9 @@ package "Backend (/lib/controllers)" {
         + getAllCats()
         + submitNewCat(name: string, rarity: string, base64Image: string)
         + getCreatedCats()
+        + getPendingCats()
+        + approveCard(catId: number)
+        + rejectCard(catId: number)
     }
 
     class FriendController {
@@ -101,10 +106,10 @@ CardActions ..> ShopController : "Moeda & Economia"
 Lida com todos os fluxos de autenticação do usuário, incluindo login, registro, recuperação de senha e gerenciamento de sessão. Ele interage diretamente com o Supabase Auth.
 
 ### 2. UserController
-Busca e atualiza os dados do perfil do usuário, incluindo a contagem global de notificações (trocas pendentes, presentes não lidos, pedidos de amizade) usados na barra de navegação.
+Busca e atualiza os dados do perfil do usuário, incluindo a contagem global de notificações (trocas pendentes, presentes não lidos, pedidos de amizade) usados na barra de navegação. Adicionalmente, lida com a promoção e o rebaixamento de usuários para o cargo de administrador (`admin`), utilizando a Service Role Key do Supabase para contornar políticas de segurança (RLS) e atualizar os papéis no banco de dados.
 
 ### 3. CardActions
-Gerencia o loop central do jogo: sorteio de cartas sob um tempo de espera (cooldown), utilização de itens para acelerar esse tempo e compra/venda de cartas repetidas por moeda no jogo. Também lida com a submissão de novos gatos pelos usuários.
+Gerencia o loop central do jogo: sorteio de cartas sob um tempo de espera (cooldown), utilização de itens para acelerar esse tempo e compra/venda de cartas repetidas por moeda no jogo. Também lida com a submissão de novos gatos pelos usuários. Para administradores, o módulo fornece ações (aprovamento/rejeição de cartas e busca de cartas pendentes) que utilizam a Service Role Key para contornar o RLS de inserções e atualizações restritas na tabela pública de gatos.
 
 ### 4. TradeController & GiftController
 Aplica a regra de limite de 1 troca ativa globalmente. Lida com a oferta de cartas, negociação de contrapropostas e execução segura da dedução atômica das cartas. A lógica de presentes apresenta um tempo de espera automático para prevenir spam.
