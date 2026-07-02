@@ -2,7 +2,7 @@
 
 O banco de dados depende do PostgreSQL hospedado pelo Supabase. A segurança e a integridade dos dados são aplicadas no nível do banco de dados por meio de restrições rígidas de Chaves Estrangeiras e políticas de Row Level Security (RLS).
 
-*(Nota: O Supabase gera automaticamente um diagrama visual de Entidade-Relacionamento no Painel do Supabase, portanto, um diagrama manual foi omitido aqui).*
+![Modelo do Banco](/docs/images/database-diagram.png)
 
 ## Tabelas Principais
 
