@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { FaCoins, FaSearch, FaArrowLeft, FaSortAmountUp, FaSortAmountDown, FaArrowDown, FaArrowUp } from "react-icons/fa";
 import { HiChevronDoubleRight } from "react-icons/hi";
 import { TbCardsFilled } from "react-icons/tb";
@@ -35,6 +35,7 @@ const mapRarity = (rarity: string): CardRarity => {
 
 export function ShopWidget({ allCats }: ShopWidgetProps) {
   const { profile, cards, items, refreshProfile } = useUser();
+  const processingRef = useRef(false);
   
   // Navigation State
   // "menu" | "buy_cats" | "sell_cats"
@@ -178,6 +179,8 @@ export function ShopWidget({ allCats }: ShopWidgetProps) {
 
   // Execute buy/sell action
   const handleConfirmAction = async () => {
+    if (processingRef.current) return;
+    processingRef.current = true;
     setIsProcessing(true);
     setErrorMessage(null);
 
@@ -219,42 +222,33 @@ export function ShopWidget({ allCats }: ShopWidgetProps) {
         }
       } else if (currentView === "menu" && selectedMenuOption === "submit_cat" && submitName && submitCroppedBlob) {
         // Convert Blob to Base64 to send to server action
-        const reader = new FileReader();
-        reader.readAsDataURL(submitCroppedBlob);
+        const base64data = await new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onloadend = () => resolve(reader.result as string);
+          reader.onerror = reject;
+          reader.readAsDataURL(submitCroppedBlob);
+        });
         
-        reader.onloadend = async () => {
-          const base64data = reader.result as string;
-          
-          const res = await submitNewCat(submitName, submitRarity, base64data);
-          if (res.error) {
-            setErrorMessage(res.error);
-            setIsProcessing(false);
-          } else {
-            setSuccessMessage(`Carta submetida com sucesso! Ela aparecerá na loja quando for aprovada.`);
-            setSuccessCat(res.cat || null);
-            setShowConfirmModal(false);
-            setShowSuccessModal(true);
-            // Reset form
-            setSubmitName("");
-            setSubmitImageFile(null);
-            setSubmitCroppedBlob(null);
-            setIsProcessing(false);
-            await refreshProfile();
-          }
-        };
-        
-        reader.onerror = () => {
-          setErrorMessage("Erro ao processar a imagem da carta");
-          setIsProcessing(false);
-        };
-        
-        // Return early to prevent setting isProcessing(false) synchronously in finally block
-        return;
+        const res = await submitNewCat(submitName, submitRarity, base64data);
+        if (res.error) {
+          setErrorMessage(res.error);
+        } else {
+          setSuccessMessage(`Carta submetida com sucesso! Ela aparecerá na loja quando for aprovada.`);
+          setSuccessCat(res.cat || null);
+          setShowConfirmModal(false);
+          setShowSuccessModal(true);
+          // Reset form
+          setSubmitName("");
+          setSubmitImageFile(null);
+          setSubmitCroppedBlob(null);
+          await refreshProfile();
+        }
       }
     } catch (e) {
       console.error(e);
       setErrorMessage("Erro ao processar a operação");
     } finally {
+      processingRef.current = false;
       setIsProcessing(false);
     }
   };
