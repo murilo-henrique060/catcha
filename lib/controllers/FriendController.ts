@@ -193,7 +193,9 @@ export async function getPublicPlayers() {
     .from('profiles')
     .select('id, username, role')
     .neq('id', user.id)
-    .neq('role', 'superadmin');
+    .neq('role', 'superadmin')
+    .order('role', { ascending: true })
+    .order('username', { ascending: true });
 
   if (profilesError || !profiles) {
     console.error("Error fetching profiles:", profilesError);

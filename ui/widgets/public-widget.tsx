@@ -248,6 +248,13 @@ export function PublicWidget({ players: initialPlayers, totalCatsCount, currentU
                     Remover Admin
                   </button>
                 )}
+                {((currentUserRole === 'admin' && player.role === 'admin') || player.role === 'superadmin') && (currentUserRole === 'admin' || currentUserRole === 'superadmin') && (
+                  <div
+                    className="flex items-center justify-center gap-2 py-2.5 px-3 col-span-2 rounded-xl bg-gray-50 border border-gray-200 text-gray-400 font-bold uppercase text-[11px] tracking-wider shadow-sm select-none"
+                  >
+                    {player.role === 'superadmin' ? 'Super Administrador' : 'Administrador'}
+                  </div>
+                )}
               </div>
 
             </div>
