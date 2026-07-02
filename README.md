@@ -11,7 +11,7 @@ Bem-vindo ao **Catcha**, um jogo de coleção e troca de cartas baseado na web! 
 - 🤝 **Trocas e Presentes**: Proponha, faça contrapropostas e aceite trocas de cartas com seus amigos, ou envie cartas repetidas como presentes.
 - 🛒 **Economia no Jogo**: Venda cartas repetidas para ganhar moedas e compre itens consumíveis na loja para acelerar o tempo de espera dos seus sorteios.
 - 🌐 **Intercâmbios Globais**: Junte suas cartas em eventos de intercâmbio global para tentar conseguir cartas de raridades maiores!
-- 🛡️ **Moderação (Admins)**: Sistema de papéis (`admin`, `superadmin`) para aprovar ou rejeitar novas cartas submetidas pela comunidade antes que elas se tornem sortéaveis no jogo.
+- 🛡️ **Moderação (Admins)**: Sistema de papéis (`user`, `admin`, `superadmin`) onde administradores podem promover outros usuários, além de aprovar ou rejeitar novas cartas submetidas pela comunidade antes que elas entrem oficialmente para o jogo.
 
 ## Tecnologias Utilizadas
 
