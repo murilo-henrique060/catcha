@@ -56,7 +56,8 @@ export async function getCardsCountPerRarity() {
   const supabase = await createSupabaseServerClient();
   const { data, error } = await supabase
     .from('cats')
-    .select('rarity');
+    .select('rarity')
+    .eq('status', 'approved');
 
   if (error) {
     console.error("Error fetching cards count per rarity:", error);
