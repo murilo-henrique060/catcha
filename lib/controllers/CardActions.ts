@@ -576,12 +576,25 @@ export async function approveCard(catId: number) {
   const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single();
   if (profile?.role !== 'admin' && profile?.role !== 'superadmin') return { error: "Sem permissão" };
 
-  const { error } = await supabase
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+
+  if (!serviceRoleKey || !supabaseUrl) {
+    return { error: "Credenciais de administrador não configuradas no servidor" };
+  }
+
+  const { createClient } = await import('@supabase/supabase-js');
+  const supabaseAdmin = createClient(supabaseUrl, serviceRoleKey);
+
+  const { error } = await supabaseAdmin
     .from('cats')
     .update({ status: 'approved' })
     .eq('id', catId);
 
-  if (error) return { error: "Erro ao aprovar carta" };
+  if (error) {
+    console.error("Error approving card:", error);
+    return { error: "Erro ao aprovar carta" };
+  }
   revalidatePath("/home/admin/pedidos");
   revalidatePath("/home/album");
   revalidatePath("/home");
@@ -598,12 +611,25 @@ export async function rejectCard(catId: number, message: string) {
   const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single();
   if (profile?.role !== 'admin' && profile?.role !== 'superadmin') return { error: "Sem permissão" };
 
-  const { error } = await supabase
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+
+  if (!serviceRoleKey || !supabaseUrl) {
+    return { error: "Credenciais de administrador não configuradas no servidor" };
+  }
+
+  const { createClient } = await import('@supabase/supabase-js');
+  const supabaseAdmin = createClient(supabaseUrl, serviceRoleKey);
+
+  const { error } = await supabaseAdmin
     .from('cats')
     .update({ status: 'rejected', reject_message: message })
     .eq('id', catId);
 
-  if (error) return { error: "Erro ao rejeitar carta" };
+  if (error) {
+    console.error("Error rejecting card:", error);
+    return { error: "Erro ao rejeitar carta" };
+  }
   revalidatePath("/home/admin/pedidos");
   return { success: true };
 }

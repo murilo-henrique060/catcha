@@ -329,13 +329,25 @@ export async function makeAdmin(targetUserId: string) {
     return { error: "Sem permissão" };
   }
 
-  const { error } = await supabase
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+
+  if (!serviceRoleKey || !supabaseUrl) {
+    return { error: "Credenciais de administrador não configuradas no servidor" };
+  }
+
+  const supabaseAdmin = createClient(supabaseUrl, serviceRoleKey);
+
+  const { error } = await supabaseAdmin
     .from('profiles')
     .update({ role: 'admin' })
     .eq('id', targetUserId)
     .neq('role', 'superadmin'); // Prevent accidentally modifying superadmin
 
-  if (error) return { error: "Erro ao promover usuário" };
+  if (error) {
+    console.error("Admin promote user error:", error);
+    return { error: "Erro ao promover usuário" };
+  }
 
   revalidatePath("/home/public");
   return { success: true };
@@ -354,13 +366,25 @@ export async function removeAdmin(targetUserId: string) {
     return { error: "Sem permissão" };
   }
 
-  const { error } = await supabase
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+
+  if (!serviceRoleKey || !supabaseUrl) {
+    return { error: "Credenciais de administrador não configuradas no servidor" };
+  }
+
+  const supabaseAdmin = createClient(supabaseUrl, serviceRoleKey);
+
+  const { error } = await supabaseAdmin
     .from('profiles')
     .update({ role: 'user' })
     .eq('id', targetUserId)
     .neq('role', 'superadmin'); // Cannot demote superadmin
 
-  if (error) return { error: "Erro ao remover admin" };
+  if (error) {
+    console.error("Admin demote user error:", error);
+    return { error: "Erro ao remover admin" };
+  }
 
   revalidatePath("/home/public");
   return { success: true };
