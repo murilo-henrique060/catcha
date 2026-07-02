@@ -146,6 +146,10 @@ export function NavbarWidget({ username = "Username", coins = 0, className = "" 
     };
   }, []);
 
+  const friendsTabNotificationsCount = notifications
+    ? notifications.pendingFriendRequests + notifications.activeTradesCount + notifications.pendingGiftsCount
+    : 0;
+
   return (
     <nav className={`w-full border-b-2 border-[#FF99D7] bg-[linear-gradient(90deg,#C40873_2.02%,#B01070_78.46%,#8C1D6B_99.58%)] shadow-[0_4px_6px_0_rgba(0,0,0,0.25)] ${className}`}>
       <div className="mx-auto flex h-14 w-full max-w-[1366px] items-stretch justify-between pe-2 sm:pe-4">
@@ -166,9 +170,9 @@ export function NavbarWidget({ username = "Username", coins = 0, className = "" 
                 ].join(" ")}
               >
                 <span>{item.label}</span>
-                {item.label === "AMIGOS" && notifications && notifications.total > 0 && (
+                {item.label === "AMIGOS" && friendsTabNotificationsCount > 0 && (
                   <span className="ml-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[9px] font-bold text-white shadow-sm leading-none animate-pulse">
-                    {notifications.total}
+                    {friendsTabNotificationsCount}
                   </span>
                 )}
               </Link>
