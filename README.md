@@ -27,7 +27,7 @@ A documentação completa do projeto está disponível no diretório `/docs`:
 - 📖 [Índice Principal da Documentação](./docs/index.md)
 - 🛠️ [Guia de Desenvolvimento Local](./docs/development.md)
 - 🚀 [Guia de Implantação em Produção](./docs/deploy.md)
-- ⚙️ [Controladores do Backend & Diagrama PlantUML](./docs/backend/controllers.md)
+- ⚙️ [Controladores do Backend & Diagrama PlantUML](./docs/backend/actions.md)
 - 🗄️ [Esquema do Banco de Dados](./docs/database/schema.md)
 
 ## Início Rápido (Desenvolvimento)
