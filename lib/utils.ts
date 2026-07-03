@@ -7,16 +7,16 @@
  * @returns A URL de imagem resolvida.
  */
 export function getCatImageUrl(imagePath: string | null | undefined): string {
-  if (!imagePath) return "/cats/cat001.webp"; // Fallback padrão
+  if (!imagePath) return "/cats/front_background.jpg"; // Fallback padrão
 
   // Se já for uma URL completa HTTP/HTTPS, retorna ela diretamente
   if (imagePath.startsWith("http://") || imagePath.startsWith("https://")) {
     return imagePath;
   }
 
-  // Extrai apenas o nome do arquivo (ex: "cat001.webp" de "/cats/cat001.webp")
+  // Extrai apenas o nome do arquivo (ex: "cat001.webp" de "/cats/front_background.jpg")
   const filename = imagePath.split("/").pop();
-  if (!filename) return "/cats/cat001.webp";
+  if (!filename) return "/cats/front_background.jpg";
 
   // Se for um ativo estático de layout que foi mantido em /public/cats, serve localmente
   if (filename === "back_cover.webp" || filename === "front_background.jpg" || filename === "logo.png") {

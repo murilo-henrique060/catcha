@@ -40,9 +40,6 @@ public async getBasicProfile(userId?: string) {
   if (!targetUserId) {
     const { data, error: authError } = await supabase.auth.getUser();
     if (authError || !data?.user) {
-      if (authError && authError.name !== 'AuthSessionMissingError') {
-        console.error("Error getting authenticated user:", authError);
-      }
       return null;
     }
     targetUserId = data.user.id;
@@ -115,10 +112,6 @@ public async getUserProfile(userId?: string) {
   if (!targetUserId) {
     const { data, error: authError } = await supabase.auth.getUser();
     if (authError || !data?.user) {
-      // Avoid printing a console error trace for normal guest redirect states
-      if (authError && authError.name !== 'AuthSessionMissingError') {
-        console.error("Error getting authenticated user:", authError);
-      }
       return null;
     }
     targetUserId = data.user.id;
