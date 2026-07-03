@@ -239,6 +239,14 @@ export function PublicWidget({ players: initialPlayers, totalCatsCount, currentU
                     Tornar Admin
                   </button>
                 )}
+                
+                {/* Visual block when normal admin looks at another admin */}
+                {currentUserRole === 'admin' && player.role === 'admin' && (
+                  <div className="flex items-center justify-center gap-2 py-2.5 px-3 col-span-2 rounded-xl bg-purple-50 border border-purple-200 text-purple-600 font-bold uppercase text-[11px] tracking-wider select-none cursor-default opacity-90">
+                    Colega Administrador
+                  </div>
+                )}
+
                 {currentUserRole === 'superadmin' && player.role === 'admin' && (
                   <button
                     onClick={() => handleRemoveAdmin(player.id, player.username)}

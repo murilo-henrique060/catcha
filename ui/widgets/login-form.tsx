@@ -4,7 +4,9 @@ import { useState, Suspense } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { LoginRequest, login } from "@/lib/controllers/AuthController";
+import { login } from "@/lib/controllers/AuthController";
+import { LoginRequest } from "@/lib/controllers/core/AuthController";
+
 
 function LoginFormInner() {
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -25,8 +27,7 @@ function LoginFormInner() {
       const messages: Record<string, string> = {
         "preencha-os-campos-obrigatorios": "Preencha e-mail e senha para continuar.",
         invalid_recovery_session: "Seu link de recuperacao expirou ou e invalido. Solicite um novo e-mail.",
-        invalid_credentials: "E-mail ou senha invalidos.",
-      };
+        invalid_credentials: "E-mail ou senha invalidos." };
 
       return messages[errorParam] ?? decodeURIComponent(errorParam);
     }
@@ -49,8 +50,7 @@ function LoginFormInner() {
     const request: LoginRequest = {
       email: String(data.get("email") ?? "").trim(),
       password: String(data.get("password") ?? ""),
-      rememberMe: data.get("rememberMe") === "on",
-    };
+      rememberMe: data.get("rememberMe") === "on" };
 
     const result = await login(request);
 

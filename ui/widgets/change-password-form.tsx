@@ -3,7 +3,9 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ChangePasswordRequest, changePassword } from "@/lib/controllers/AuthController";
+import { changePassword } from "@/lib/controllers/AuthController";
+import { ChangePasswordRequest } from "@/lib/controllers/core/AuthController";
+
 
 export function ChangePasswordForm() {
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -17,8 +19,7 @@ export function ChangePasswordForm() {
 
     const request: ChangePasswordRequest = {
       password: String(data.get("password") ?? ""),
-      confirmPassword: String(data.get("confirmPassword") ?? ""),
-    };
+      confirmPassword: String(data.get("confirmPassword") ?? "") };
 
     const result = await changePassword(request);
 

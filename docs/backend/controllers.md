@@ -1,10 +1,14 @@
 # Visão Geral dos Controladores no Backend
 
-O backend do Catcha está totalmente contido dentro do diretório `/lib/controllers`. Ele utiliza Next.js Server Actions para interagir com segurança com o banco de dados Supabase. Esses controladores atuam como ponte entre a interface (UI) no lado do cliente e o banco de dados, aplicando lógica de negócios, validações e Row-Level Security (Segurança a Nível de Linha).
+O backend do Catcha está totalmente contido dentro do diretório `/lib/controllers`. Ele utiliza Next.js Server Actions para interagir com segurança com o banco de dados Supabase. 
+
+Recentemente, a arquitetura foi refatorada seguindo princípios de **Programação Orientada a Objetos (POO)**. As lógicas de negócios principais (Core) residem em `/lib/controllers/core/` sob a forma de Classes (ex: `UserController`, `CardActions`), as quais herdam de um `BaseController` para o gerenciamento comum de dependências e injeção do cliente do Supabase. Os arquivos em `/lib/controllers/` (na raiz do módulo) são instâncias Server Actions puras que encapsulam e chamam os métodos dessas classes, garantindo total compatibilidade com o Next.js e isolamento de estado.
+
+Esses controladores atuam como ponte entre a interface (UI) no lado do cliente e o banco de dados, aplicando lógica de negócios, validações e Row-Level Security (Segurança a Nível de Linha).
 
 ## Diagrama de Classes PlantUML
 
-O diagrama a seguir ilustra os principais módulos dentro do diretório `/lib/controllers` e suas responsabilidades chaves.
+O diagrama a seguir ilustra os principais módulos dentro do diretório `/lib/controllers/core/` e suas responsabilidades chaves.
 
 ![Diagrama de Classes](/docs/images/class-diagram.png)
 

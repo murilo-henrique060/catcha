@@ -16,7 +16,7 @@ Bem-vindo ao **Catcha**, um jogo de coleção e troca de cartas baseado na web! 
 ## Tecnologias Utilizadas
 
 - **Frontend**: [Next.js](https://nextjs.org/) (App Router), React, Tailwind CSS
-- **Backend & Banco de Dados**: [Supabase](https://supabase.com/) (PostgreSQL)
+- **Backend & Banco de Dados**: [Supabase](https://supabase.com/) (PostgreSQL). Toda a lógica backend foi arquitetada usando princípios de **Programação Orientada a Objetos (POO)** e *Next.js Server Actions*.
 - **Autenticação**: Supabase Auth (Verificação por E-mail)
 - **Armazenamento (Storage)**: Supabase Storage (Buckets Públicos para as Imagens das Cartas Oficiais e Uploads dos Usuários)
 

@@ -5,7 +5,9 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 
-import { RegisterRequest, getCurrentUser, register } from "@/lib/controllers/AuthController";
+import { getCurrentUser, register } from "@/lib/controllers/AuthController";
+import { RegisterRequest } from "@/lib/controllers/core/AuthController";
+
 
 export function RegisterForm() {
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -23,8 +25,7 @@ export function RegisterForm() {
       email: String(data.get("email") ?? "").trim(),
       password: String(data.get("password") ?? ""),
       confirmPassword: String(data.get("confirmPassword") ?? ""),
-      terms: data.get("terms") === "on",
-    };
+      terms: data.get("terms") === "on" };
 
     const { errors: registerErrors } = await register(request);
 

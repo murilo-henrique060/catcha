@@ -1,0 +1,127 @@
+import { BaseController } from "./BaseController";
+
+/**
+ * Intervalo padrão entre sorteios gratuitos em horas.
+ */
+export const DRAW_INTERVAL_HOURS = 1;
+
+/**
+ * Intervalo padrão entre sorteios em milissegundos.
+ */
+export const DRAW_INTERVAL_MS = DRAW_INTERVAL_HOURS * 60 * 60 * 1000;
+
+/**
+ * As chances baseadas nas raridades do jogo para sorteios.
+ */
+export const RARITY_CHANCES = {
+  S: 0.05,
+  A: 0.15,
+  B: 0.30,
+  C: 0.50,
+};
+
+/**
+ * Controller responsável por estatísticas, avaliações e visualização de cartas.
+ */
+
+export class CardController extends BaseController {
+
+  constructor() {
+    super("CardController");
+  }
+
+  public getModuleDescription(): string {
+    return "Módulo para calcular valores, estatísticas de raridade e buscar cartas dos usuários.";
+  }
+
+  /**
+   * Retorna o valor de venda em moedas de uma carta baseado em sua raridade.
+   */
+  public async getRarityValue(rarity: string): Promise<number> {
+    switch (rarity) {
+      case 'S': return 1000;
+      case 'A': return 500;
+      case 'B': return 200;
+      default: return 100;
+    }
+  }
+
+  /**
+   * Retorna o preço de compra de uma carta baseada em sua raridade.
+   */
+  public async getBuyPrice(rarity: string): Promise<number> {
+    return this.getRarityValue(rarity); // S = 1000, A = 500, B = 200, C = 100
+  }
+
+  /**
+   * Retorna uma contagem de todas as cartas existentes no banco de dados, agrupadas por raridade.
+   */
+  public async getCardsCountPerRarity() {
+    const supabase = await this.getClient(); // Encapsulamento de banco de dados herdado
+    const { data, error } = await supabase
+      .from('cats')
+      .select('rarity')
+      .eq('status', 'approved');
+
+    if (error) {
+      console.error("Error fetching cards count per rarity:", error);
+      return { S: 0, A: 0, B: 0, C: 0 };
+    }
+
+    const counts = { S: 0, A: 0, B: 0, C: 0 };
+    data.forEach((cat: { rarity: string }) => {
+      if (cat.rarity in counts) {
+        counts[cat.rarity as 'S' | 'A' | 'B' | 'C']++;
+      }
+    });
+
+    return counts;
+  }
+
+  /**
+   * Busca todas as cartas que um determinado usuário possui (o seu álbum).
+   */
+  public async getUserCards(profileId: string) {
+    const supabase = await this.getClient();
+    
+    const { data, error } = await supabase
+      .from('profiles_cats')
+      .select(`
+        quantity,
+        cat:cats (
+          id,
+          name,
+          rarity,
+          image_path,
+          profiles:profiles!cats_submitter_id_fkey(username)
+        )
+      `)
+      .eq('profile_id', profileId);
+
+    if (error || !data) {
+      console.error("Error fetching user cards (cats):", error);
+      return [];
+    }
+
+    return data.map((row) => {
+      const rawCat: any = Array.isArray(row.cat) ? row.cat[0] : row.cat;
+      if (!rawCat) return { quantity: row.quantity, cat: null };
+      
+      const profilesVal = rawCat.profiles;
+      const profile = Array.isArray(profilesVal) ? profilesVal[0] : profilesVal;
+      
+      return {
+        quantity: row.quantity,
+        cat: {
+          id: rawCat.id,
+          name: rawCat.name,
+          rarity: rawCat.rarity,
+          image_path: rawCat.image_path,
+          profiles: profile ? { username: profile.username } : null
+        }
+      };
+    }).filter(row => row.cat !== null && row.cat !== undefined) as any;
+  }
+}
+
+// Objeto instanciado
