@@ -4,7 +4,7 @@ Bem-vindo à documentação do **Catcha**, um jogo de coleção e troca de carta
 
 ## Índice
 
-1. [Visão Geral do Backend (Controladores)](./backend/controllers.md)
+1. [Visão Geral do Backend (Server Actions Controladores Core)](./backend/actions.md)
 2. [Autenticação e Armazenamento](./backend/auth-and-storage.md)
 3. [Esquema do Banco de Dados](./database/schema.md)
 4. [Guia de Desenvolvimento Local](./development.md)
