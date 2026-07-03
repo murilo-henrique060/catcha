@@ -14,7 +14,7 @@ import { z } from "zod";
  * @param request - Dados do registro (email, senha, confirmação de senha, username).
  * @returns Objeto com erros de validação/execução ou nulo em caso de sucesso.
  */
-import { AuthController, RegisterRequest, LoginRequest, ConfirmEmailRequest, ChangePasswordRequest } from "./core/AuthController";
+import { AuthController, RegisterRequest, LoginRequest, ConfirmEmailRequest, ChangePasswordRequest } from "../core/AuthController";
 
 
 const authControllerInstance = new AuthController();

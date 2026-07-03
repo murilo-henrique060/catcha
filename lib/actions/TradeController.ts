@@ -1,7 +1,7 @@
 'use server';
 
 import { revalidatePath } from "next/cache";
-import { TradeController } from "./core/TradeController";
+import { TradeController } from "../core/TradeController";
 
 const tradeControllerInstance = new TradeController();
 

@@ -4,8 +4,8 @@ import { useState, Suspense } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { login } from "@/lib/controllers/AuthController";
-import { LoginRequest } from "@/lib/controllers/core/AuthController";
+import { login } from "@/lib/actions/AuthController";
+import { LoginRequest } from "@/lib/core/AuthController";
 
 
 function LoginFormInner() {

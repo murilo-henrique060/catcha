@@ -5,8 +5,8 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 
-import { getCurrentUser, register } from "@/lib/controllers/AuthController";
-import { RegisterRequest } from "@/lib/controllers/core/AuthController";
+import { getCurrentUser, register } from "@/lib/actions/AuthController";
+import { RegisterRequest } from "@/lib/core/AuthController";
 
 
 export function RegisterForm() {

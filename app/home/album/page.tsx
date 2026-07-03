@@ -2,8 +2,8 @@ export const unstable_instant = { prefetch: "static" };
 
 import { Suspense } from "react";
 import { redirect } from "next/navigation";
-import { getBasicProfile } from "@/lib/controllers/UserController";
-import { getUserCards } from "@/lib/controllers/CardController";
+import { getBasicProfile } from "@/lib/actions/UserController";
+import { getUserCards } from "@/lib/actions/CardController";
 import { AlbumWidget } from "@/ui/widgets/album-widget";
 import { AlbumSkeleton } from "@/ui/components/skeletons";
 

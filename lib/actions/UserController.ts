@@ -1,7 +1,7 @@
 'use server';
 
 import { cache } from "react";
-import { UserController } from "./core/UserController";
+import { UserController } from "../core/UserController";
 
 const userControllerInstance = new UserController();
 

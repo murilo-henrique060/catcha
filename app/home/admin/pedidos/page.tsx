@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import { redirect } from "next/navigation";
-import { getBasicProfile } from "@/lib/controllers/UserController";
-import { getPendingCards } from "@/lib/controllers/CardActions";
+import { getBasicProfile } from "@/lib/actions/UserController";
+import { getPendingCards } from "@/lib/actions/CardActions";
 import { PedidosSkeleton } from "@/ui/components/skeletons";
 import { PedidosWidget } from "@/ui/widgets/pedidos-widget";
 

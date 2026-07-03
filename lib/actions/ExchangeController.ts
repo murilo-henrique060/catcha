@@ -5,7 +5,7 @@
  * Controller responsável pelos Intercâmbios/Trocas Globais.
  * Demonstra Herança e uso de métodos encapsulados da classe pai.
  */
-import { ExchangeController } from "./core/ExchangeController";
+import { ExchangeController } from "../core/ExchangeController";
 
 const exchangeControllerInstance = new ExchangeController();
 

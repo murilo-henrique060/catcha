@@ -7,7 +7,7 @@ import { TbCardsFilled } from "react-icons/tb";
 import { CardWidget } from "./card";
 import { CardFace, CardRarity } from "./card-types";
 import { getCatImageUrl } from "@/lib/utils";
-import { approveCard, rejectCard } from "@/lib/controllers/CardActions";
+import { approveCard, rejectCard } from "@/lib/actions/CardActions";
 import { useEffect } from "react";
 
 type PedidosWidgetProps = {

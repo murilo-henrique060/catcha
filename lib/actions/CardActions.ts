@@ -1,7 +1,7 @@
 'use server';
 
 
-import { CardActions } from "./core/CardActions";
+import { CardActions } from "../core/CardActions";
 
 const cardActionsInstance = new CardActions();
 

@@ -8,7 +8,7 @@ import { HiChevronDoubleRight, HiDotsVertical } from "react-icons/hi";
 import { TbCardsFilled } from "react-icons/tb";
 import { IoMdExit } from "react-icons/io";
 
-import { logout } from "@/lib/controllers/AuthController";
+import { logout } from "@/lib/actions/AuthController";
 import { useUser } from "@/lib/contexts/UserContext";
 
 type NavbarWidgetProps = {

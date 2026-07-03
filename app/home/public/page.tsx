@@ -2,9 +2,9 @@ export const unstable_instant = { prefetch: "static" };
 
 import { Suspense } from "react";
 import { redirect } from "next/navigation";
-import { getBasicProfile } from "@/lib/controllers/UserController";
-import { getPublicPlayers } from "@/lib/controllers/FriendController";
-import { getAllCats } from "@/lib/controllers/CardActions";
+import { getBasicProfile } from "@/lib/actions/UserController";
+import { getPublicPlayers } from "@/lib/actions/FriendController";
+import { getAllCats } from "@/lib/actions/CardActions";
 import { PublicWidget } from "@/ui/widgets/public-widget";
 import { PublicSkeleton } from "@/ui/components/skeletons";
 

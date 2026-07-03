@@ -4,7 +4,7 @@
 /**
  * Controller de Itens do jogo.
  */
-import { ItemController } from "./core/ItemController";
+import { ItemController } from "../core/ItemController";
 
 const itemControllerInstance = new ItemController();
 

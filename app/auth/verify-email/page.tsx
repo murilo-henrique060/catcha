@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 
-import { getCurrentUser } from "@/lib/controllers/AuthController";
+import { getCurrentUser } from "@/lib/actions/AuthController";
 
 export const metadata: Metadata = {
   title: "Catcha - Verifique seu e-mail",

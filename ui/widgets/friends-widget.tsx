@@ -3,9 +3,9 @@
 import Link from "next/link";
 import { useState, useMemo } from "react";
 import { FaUserPlus, FaUserTimes, FaUserCheck, FaUserClock, FaUserFriends, FaBookOpen, FaGift, FaExchangeAlt, FaBoxOpen } from "react-icons/fa";
-import { acceptFriendRequest, declineFriendRequest } from "@/lib/controllers/FriendController";
-import { sendGift, receiveGift } from "@/lib/controllers/GiftController";
-import { createTradeOffer, counterTradeOffer, acceptTrade, rejectTrade, cancelTrade } from "@/lib/controllers/TradeController";
+import { acceptFriendRequest, declineFriendRequest } from "@/lib/actions/FriendController";
+import { sendGift, receiveGift } from "@/lib/actions/GiftController";
+import { createTradeOffer, counterTradeOffer, acceptTrade, rejectTrade, cancelTrade } from "@/lib/actions/TradeController";
 import { CardSelectorModal } from "@/ui/components/card-selector-modal";
 import { useUser } from "@/lib/contexts/UserContext";
 import Image from "next/image";

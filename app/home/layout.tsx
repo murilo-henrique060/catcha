@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import { redirect } from "next/navigation";
-import { getBasicProfile } from "@/lib/controllers/UserController";
+import { getBasicProfile } from "@/lib/actions/UserController";
 import { NavbarWidget } from "@/ui/widgets/navbar";
 import { NavbarSkeleton } from "@/ui/components/skeletons";
 

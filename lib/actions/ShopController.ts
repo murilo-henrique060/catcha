@@ -6,7 +6,7 @@ import { revalidatePath } from "next/cache";
  * Controller da Loja (Shop) do jogo.
  * Demonstra Herança e Polimorfismo.
  */
-import { ShopController } from "./core/ShopController";
+import { ShopController } from "../core/ShopController";
 
 const shopControllerInstance = new ShopController();
 

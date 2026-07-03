@@ -1,7 +1,7 @@
 'use server';
 
 import { revalidatePath } from "next/cache";
-import { FriendController } from "./core/FriendController";
+import { FriendController } from "../core/FriendController";
 
 const friendControllerInstance = new FriendController();
 

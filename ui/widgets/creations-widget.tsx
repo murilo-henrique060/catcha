@@ -7,7 +7,7 @@ import { TbCardsFilled } from "react-icons/tb";
 import { CardWidget } from "./card";
 import { CardFace, CardRarity } from "./card-types";
 import { getCatImageUrl } from "@/lib/utils";
-import { deleteRejectedCard } from "@/lib/controllers/CardActions";
+import { deleteRejectedCard } from "@/lib/actions/CardActions";
 
 type CreationsWidgetProps = {
   createdCats: {

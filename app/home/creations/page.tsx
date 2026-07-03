@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import { redirect } from "next/navigation";
-import { getCurrentUser } from "@/lib/controllers/AuthController";
-import { getCreatedCats } from "@/lib/controllers/CardActions";
+import { getCurrentUser } from "@/lib/actions/AuthController";
+import { getCreatedCats } from "@/lib/actions/CardActions";
 import { CreationsWidget } from "@/ui/widgets/creations-widget";
 
 async function CreationsContent() {

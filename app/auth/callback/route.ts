@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import { confirmEmail } from "@/lib/controllers/AuthController";
+import { confirmEmail } from "@/lib/actions/AuthController";
 
 export async function GET(request: NextRequest) {
   const requestUrl = new URL(request.url);

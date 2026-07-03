@@ -1,7 +1,7 @@
  import { Metadata } from "next";
 import { redirect } from "next/navigation";
 
-import { getCurrentUser } from "@/lib/controllers/AuthController";
+import { getCurrentUser } from "@/lib/actions/AuthController";
 
 import { RegisterForm } from "@/ui/widgets/register-form";
 

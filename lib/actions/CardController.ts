@@ -2,7 +2,7 @@
 
 
 
-import { CardController } from "./core/CardController";
+import { CardController } from "../core/CardController";
 
 const cardControllerInstance = new CardController();
 

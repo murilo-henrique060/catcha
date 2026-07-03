@@ -9,8 +9,8 @@ export const unstable_instant = {
 
 import { Suspense } from "react";
 import { redirect, notFound } from "next/navigation";
-import { getBasicProfile } from "@/lib/controllers/UserController";
-import { getUserCards } from "@/lib/controllers/CardController";
+import { getBasicProfile } from "@/lib/actions/UserController";
+import { getUserCards } from "@/lib/actions/CardController";
 import { AlbumWidget } from "@/ui/widgets/album-widget";
 import { createSupabaseServerClient } from "@/lib/services/supabase/server";
 import { AlbumSkeleton } from "@/ui/components/skeletons";

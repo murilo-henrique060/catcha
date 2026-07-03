@@ -3,8 +3,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { FaUser, FaEnvelope, FaKey, FaSignOutAlt, FaTrashAlt } from "react-icons/fa";
-import { updateUsername, deleteAccount, checkUsernameExists } from "@/lib/controllers/UserController";
-import { logout } from "@/lib/controllers/AuthController";
+import { updateUsername, deleteAccount, checkUsernameExists } from "@/lib/actions/UserController";
+import { logout } from "@/lib/actions/AuthController";
 import { useUser } from "@/lib/contexts/UserContext";
 
 type ProfileFormProps = {

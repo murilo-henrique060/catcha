@@ -2,9 +2,9 @@ export const unstable_instant = { prefetch: "static" };
 
 import { Suspense } from "react";
 import { redirect } from "next/navigation";
-import { getBasicProfile } from "@/lib/controllers/UserController";
-import { getCardsCountPerRarity } from "@/lib/controllers/CardController";
-import { DRAW_INTERVAL_MS } from "@/lib/controllers/core/CardController";
+import { getBasicProfile } from "@/lib/actions/UserController";
+import { getCardsCountPerRarity } from "@/lib/actions/CardController";
+import { DRAW_INTERVAL_MS } from "@/lib/core/CardController";
 import { StatsWidget } from "@/ui/widgets/stats";
 import { DrawArea } from "@/ui/widgets/draw-area";
 import { HomeSkeleton } from "@/ui/components/skeletons";

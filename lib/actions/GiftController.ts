@@ -1,7 +1,7 @@
 'use server';
 
 import { revalidatePath } from "next/cache";
-import { GiftController } from "./core/GiftController";
+import { GiftController } from "../core/GiftController";
 
 const giftControllerInstance = new GiftController();
 

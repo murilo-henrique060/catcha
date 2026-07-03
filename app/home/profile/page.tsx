@@ -2,7 +2,7 @@ export const unstable_instant = { prefetch: "static" };
 
 import { Suspense } from "react";
 import { redirect } from "next/navigation";
-import { getBasicProfile } from "@/lib/controllers/UserController";
+import { getBasicProfile } from "@/lib/actions/UserController";
 import { ProfileForm } from "@/ui/widgets/profile-form";
 import { ProfileSkeleton } from "@/ui/components/skeletons";
 

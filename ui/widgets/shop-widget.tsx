@@ -9,8 +9,8 @@ import { CardWidget } from "./card";
 import { CardFace, CardRarity } from "./card-types";
 import { useUser } from "@/lib/contexts/UserContext";
 import { getCatImageUrl } from "@/lib/utils";
-import { buyCat, sellCat, submitNewCat } from "@/lib/controllers/CardActions";
-import { buyAccelerationItem } from "@/lib/controllers/ShopController";
+import { buyCat, sellCat, submitNewCat } from "@/lib/actions/CardActions";
+import { buyAccelerationItem } from "@/lib/actions/ShopController";
 import { ImageCropper } from "../components/image-cropper";
 import { createSupabaseBrowserClient } from "@/lib/services/supabase/client";
 

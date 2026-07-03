@@ -2,8 +2,8 @@ export const unstable_instant = { prefetch: "static" };
 
 import { Suspense } from "react";
 import { redirect } from "next/navigation";
-import { getBasicProfile } from "@/lib/controllers/UserController";
-import { getFriendships } from "@/lib/controllers/FriendController";
+import { getBasicProfile } from "@/lib/actions/UserController";
+import { getFriendships } from "@/lib/actions/FriendController";
 import { FriendsWidget } from "@/ui/widgets/friends-widget";
 import { FriendsSkeleton } from "@/ui/components/skeletons";
 
@@ -15,8 +15,8 @@ export default async function FriendsPage() {
   );
 }
 
-import { getActiveTrades } from "@/lib/controllers/TradeController";
-import { getGiftsHistory } from "@/lib/controllers/GiftController";
+import { getActiveTrades } from "@/lib/actions/TradeController";
+import { getGiftsHistory } from "@/lib/actions/GiftController";
 
 async function FriendsContent() {
   const profileData = await getBasicProfile();

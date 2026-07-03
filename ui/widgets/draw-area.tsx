@@ -8,7 +8,7 @@ import { CardWidget } from "./card";
 import { CardFace, CardRarity } from "./card-types";
 import { useUser } from "@/lib/contexts/UserContext";
 import { getCatImageUrl } from "@/lib/utils";
-import { drawCard, accelerateDraw } from "@/lib/controllers/CardActions";
+import { drawCard, accelerateDraw } from "@/lib/actions/CardActions";
 
 type DrawAreaProps = {
   drawIntervalMs: number;

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState, useMemo } from "react";
 import { FaSearch, FaUserPlus, FaUserClock, FaUserFriends, FaBookOpen } from "react-icons/fa";
-import { sendFriendRequest } from "@/lib/controllers/FriendController";
+import { sendFriendRequest } from "@/lib/actions/FriendController";
 
 type PublicPlayer = {
   id: string;
@@ -67,7 +67,7 @@ export function PublicWidget({ players: initialPlayers, totalCatsCount, currentU
     setErrorMessage(null);
     setSuccessMessage(null);
     try {
-      const { makeAdmin } = await import('@/lib/controllers/UserController');
+      const { makeAdmin } = await import('@/lib/actions/UserController');
       const res = await makeAdmin(playerId);
       if (res.error) setErrorMessage(res.error);
       else {
@@ -86,7 +86,7 @@ export function PublicWidget({ players: initialPlayers, totalCatsCount, currentU
     setErrorMessage(null);
     setSuccessMessage(null);
     try {
-      const { removeAdmin } = await import('@/lib/controllers/UserController');
+      const { removeAdmin } = await import('@/lib/actions/UserController');
       const res = await removeAdmin(playerId);
       if (res.error) setErrorMessage(res.error);
       else {

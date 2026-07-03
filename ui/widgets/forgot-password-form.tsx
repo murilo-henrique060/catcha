@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { forgotPassword } from "@/lib/controllers/AuthController";
+import { forgotPassword } from "@/lib/actions/AuthController";
 
 export function ForgotPasswordForm() {
   const [email, setEmail] = useState("");

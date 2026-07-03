@@ -1,7 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
-import { getUserProfile } from "@/lib/controllers/UserController";
+import { getUserProfile } from "@/lib/actions/UserController";
 
 export type UserProfileData = {
   profile: {

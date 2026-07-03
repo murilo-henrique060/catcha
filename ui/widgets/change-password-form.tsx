@@ -3,8 +3,8 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { changePassword } from "@/lib/controllers/AuthController";
-import { ChangePasswordRequest } from "@/lib/controllers/core/AuthController";
+import { changePassword } from "@/lib/actions/AuthController";
+import { ChangePasswordRequest } from "@/lib/core/AuthController";
 
 
 export function ChangePasswordForm() {
