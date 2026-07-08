@@ -94,14 +94,14 @@ export function CardWidget({ title, rarity = CardRarity.C, start_face: initial_f
                 </div>
               )}
               <div 
-                className="relative z-10 flex justify-between py-[2.5cqw] px-[4cqw] shadow-[0_0.8cqw_1.6cqw_0_rgba(0,0,0,0.25)]" 
+                className="relative z-auto flex justify-between py-[2.5cqw] px-[4cqw] shadow-[0_0.8cqw_1.6cqw_0_rgba(0,0,0,0.25)]" 
                 style={{ 
                   background: rarityColors[rarity][2],
                   borderRadius: '2.5cqw'
                 }}
               >
                 <h2 
-                  className="font-bold text-white text-shadow-md leading-none z-auto"
+                  className="font-bold text-white text-shadow-md leading-none"
                   style={{ fontSize: '7.5cqw' }}
                 >
                   {title}
