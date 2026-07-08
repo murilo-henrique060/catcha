@@ -101,7 +101,7 @@ export function CardWidget({ title, rarity = CardRarity.C, start_face: initial_f
                 }}
               >
                 <h2 
-                  className="font-bold text-white text-shadow-md leading-none"
+                  className="font-bold text-white text-shadow-md leading-none z-auto"
                   style={{ fontSize: '7.5cqw' }}
                 >
                   {title}
